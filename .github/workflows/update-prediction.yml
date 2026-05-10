@@ -1,0 +1,93 @@
+name: Update prediction
+
+# Regenerate the HTML prediction every 6 hours and publish to GitHub Pages.
+# This is what makes the LinkedIn "Try it" link always show a fresh prediction
+# without anyone needing to install the project.
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # every 6 hours
+  workflow_dispatch:        # allow manual trigger from the Actions tab
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "pipeline.py"
+      - ".github/workflows/update-prediction.yml"
+
+# Required to push to gh-pages
+permissions:
+  contents: write
+
+jobs:
+  predict:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      # --- FastF1 cache ---
+      # Caching the FastF1 data dir saves ~5 minutes on subsequent runs and
+      # avoids hammering the F1 timing API.
+      - name: Restore FastF1 cache
+        uses: actions/cache@v4
+        with:
+          path: cache/
+          key: fastf1-cache-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            fastf1-cache-${{ runner.os }}-
+
+      # --- Trained model artifact ---
+      # We keep the trained model in a separate cache so we don't retrain on
+      # every cron run. Retraining happens weekly via a separate workflow or
+      # by manually deleting this cache.
+      - name: Restore trained model
+        uses: actions/cache@v4
+        with:
+          path: |
+            model/
+            data/processed/
+          key: f1-model-${{ hashFiles('src/**.py') }}
+          restore-keys: |
+            f1-model-
+
+      - name: Run pipeline (no auto-open browser)
+        run: python pipeline.py --skip-eda --no-open
+        env:
+          PYTHONUNBUFFERED: "1"
+
+      # --- Stage HTML for Pages ---
+      - name: Prepare publish directory
+        run: |
+          mkdir -p public
+          # Most recent HTML becomes index.html so the GitHub Pages root URL
+          # always shows the latest prediction
+          latest=$(ls -t predictions/*.html 2>/dev/null | head -n 1 || true)
+          if [ -z "$latest" ]; then
+            echo "No prediction HTML produced — failing"
+            exit 1
+          fi
+          cp "$latest" public/index.html
+          # Also copy all historical predictions so old links keep working
+          cp predictions/*.html public/ 2>/dev/null || true
+          # Add a meta-refresh as a tiny safety net for stale caches
+          ls -la public/
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          force_orphan: true
+          commit_message: "Update prediction (${{ github.run_id }})"

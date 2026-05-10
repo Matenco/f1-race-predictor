@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+
+# Virtual environments
+venv/
+env/
+.env
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project-specific
+cache/                  # FastF1 cache (~hundreds of MB)
+data/processed/         # Generated CSVs
+model/                  # Saved models + metadata
+predictions/            # Generated HTML reports
+figures/                # Generated PNGs
+*.log
+
+# Jupyter
+.ipynb_checkpoints/

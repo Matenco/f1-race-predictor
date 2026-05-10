@@ -1,0 +1,74 @@
+[
+  {
+    "Year":2025,
+    "Round":5,
+    "GP":"Saudi Arabian Grand Prix",
+    "XGBoost_Hungarian":5,
+    "Baseline_Grid":4,
+    "Baseline_Form":5,
+    "RMSE":4.716990566
+  },
+  {
+    "Year":2025,
+    "Round":7,
+    "GP":"Emilia Romagna Grand Prix",
+    "XGBoost_Hungarian":3,
+    "Baseline_Grid":3,
+    "Baseline_Form":3,
+    "RMSE":4.2130748866
+  },
+  {
+    "Year":2025,
+    "Round":12,
+    "GP":"British Grand Prix",
+    "XGBoost_Hungarian":6,
+    "Baseline_Grid":5,
+    "Baseline_Form":5,
+    "RMSE":4.8166378315
+  },
+  {
+    "Year":2025,
+    "Round":15,
+    "GP":"Dutch Grand Prix",
+    "XGBoost_Hungarian":5,
+    "Baseline_Grid":5,
+    "Baseline_Form":2,
+    "RMSE":7.4330343737
+  },
+  {
+    "Year":2025,
+    "Round":20,
+    "GP":"Mexico City Grand Prix",
+    "XGBoost_Hungarian":5,
+    "Baseline_Grid":5,
+    "Baseline_Form":2,
+    "RMSE":5.5
+  },
+  {
+    "Year":2025,
+    "Round":22,
+    "GP":"Las Vegas Grand Prix",
+    "XGBoost_Hungarian":3,
+    "Baseline_Grid":3,
+    "Baseline_Form":2,
+    "RMSE":7.7330459717
+  },
+  {
+    "Year":2026,
+    "Round":1,
+    "GP":"Australian Grand Prix",
+    "XGBoost_Hungarian":7,
+    "Baseline_Grid":5,
+    "Baseline_Form":3,
+    "RMSE":5.3470467635
+  },
+  {
+    "Year":2026,
+    "Round":3,
+    "GP":"Japanese Grand Prix",
+    "XGBoost_Hungarian":5,
+    "Baseline_Grid":7,
+    "Baseline_Form":4,
+    "RMSE":4.3117176497
+  }
+]
