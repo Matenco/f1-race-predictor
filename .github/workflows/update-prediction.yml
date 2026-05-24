@@ -56,11 +56,27 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            model/
+            model/xgb_f1_final.json
+            model/model_metadata.json
+            model/optuna_best_params.json
+            model/validation_history.json
             data/processed/
           key: f1-model-${{ hashFiles('src/**.py') }}
           restore-keys: |
             f1-model-
+
+      # --- Prediction history ---
+      # Stored separately so it accumulates across every run regardless of
+      # whether the model or source code changed. The run_id in the key
+      # guarantees a new cache entry is written each run; restore-keys picks
+      # the most recent previous entry.
+      - name: Restore prediction history
+        uses: actions/cache@v4
+        with:
+          path: model/prediction_history.json
+          key: f1-prediction-history-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            f1-prediction-history-${{ runner.os }}-
 
       - name: Run pipeline (no auto-open browser)
         run: python pipeline.py --skip-eda --no-open
