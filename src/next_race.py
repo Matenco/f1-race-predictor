@@ -57,7 +57,8 @@ def get_next_race(reference_date: pd.Timestamp | None = None) -> NextRace:
 
     schedule = fastf1.get_event_schedule(year, include_testing=False)
     schedule["EventDate"] = pd.to_datetime(schedule["EventDate"])
-    upcoming = schedule[schedule["EventDate"] >= reference_date].sort_values("EventDate")
+    reference_date_only = reference_date.normalize()
+    upcoming = schedule[schedule["EventDate"] >= reference_date_only].sort_values("EventDate")
 
     # If the season has ended, look at next year
     if len(upcoming) == 0:
