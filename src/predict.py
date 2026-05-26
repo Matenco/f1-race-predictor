@@ -215,23 +215,17 @@ def build_prediction_features(features_df: pd.DataFrame,
             driver, team, features_df,
         )
 
-        # Quali time delta — only known after qualifying. Use 0.0 in blind mode
-        # (model treats this as "missing/unknown")
+        # Quali time delta — only known after qualifying.
         if grid_positions is not None and driver in grid_positions:
             row["GridPosition"] = float(grid_positions[driver])
             # In informed mode the quali delta is best supplied by the caller;
             # leaving as NaN lets XGBoost's native NaN handling take over.
             row["quali_time_delta_s"] = np.nan
         else:
-            # Blind mode: estimate grid from recent form
-            row["GridPosition"] = float(row.get("driver_avg_pos_last3") or 11.0)
+            # Blind mode: GridPosition filled in as integer rank after all rows
+            # are built (see post-processing below). Use sentinel NaN for now.
+            row["GridPosition"] = np.nan
             row["quali_time_delta_s"] = np.nan
-
-        # Grid vs form
-        avg5 = row.get("driver_avg_pos_last5")
-        row["grid_vs_driver_form"] = (
-            row["GridPosition"] - avg5 if pd.notna(avg5) else np.nan
-        )
 
         # Context features
         row["is_rain"] = is_rain
@@ -240,7 +234,21 @@ def build_prediction_features(features_df: pd.DataFrame,
 
         rows.append(row)
 
-    return pd.DataFrame(rows)
+    # Blind mode: rank drivers by recent form and assign integer GridPositions
+    # (1..N) so the feature distribution matches training data (integers, not
+    # raw floats like 7.3 which land in the wrong XGBoost tree branches).
+    if grid_positions is None:
+        rows.sort(key=lambda r: float(r.get("driver_avg_pos_last3") or 11.0))
+        for rank, row in enumerate(rows, start=1):
+            row["GridPosition"] = float(rank)
+
+    df_out = pd.DataFrame(rows)
+
+    # Grid vs form — computed after GridPosition is finalised
+    avg5 = df_out["driver_avg_pos_last5"]
+    df_out["grid_vs_driver_form"] = df_out["GridPosition"] - avg5
+
+    return df_out
 
 
 # =============================================================================

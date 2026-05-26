@@ -34,7 +34,7 @@ SEASONS: list[int] = list(range(2022, datetime.now().year + 1))
 
 # --- Feature engineering ---
 WEIGHT_HALF_LIFE_DAYS = 365     # Time-decay half-life for sample weights
-NEW_ERA_WEIGHT_BOOST = 3.0      # Multiplier for races in the 2026+ regulation era
+NEW_ERA_WEIGHT_BOOST = 1.5      # Multiplier for races in the 2026+ regulation era
 NEW_ERA_YEAR = 2026             # First year of the new regulation era
 
 # Feature column list — single source of truth used by training and prediction
@@ -71,7 +71,7 @@ RANDOM_STATE = 42
 # --- Training ---
 N_OPTUNA_TRIALS = 50            # Set to 0 to skip tuning and load saved best params
 MIN_TRAIN_RACES = 40            # Minimum number of past races before a race becomes part of validation
-USE_SAVED_OPTUNA_PARAMS = True  # If True and saved params exist, skip new tuning
+USE_SAVED_OPTUNA_PARAMS = False  # If True and saved params exist, skip new tuning
 
 # Fixed XGBoost params (not tuned)
 XGB_FIXED_PARAMS = {

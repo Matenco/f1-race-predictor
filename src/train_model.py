@@ -111,7 +111,12 @@ def baseline_form_top5(race_df: pd.DataFrame) -> list:
 # =============================================================================
 def _build_optuna_objective(df: pd.DataFrame, num_classes: int,
                             tune_val_races: list[int]):
-    """Build the Optuna objective: minimise mean RMSE across tuning races."""
+    """Build the Optuna objective: maximise mean game score across tuning races.
+
+    Uses the same +2/+1 scoring rule and Hungarian assignment as the real
+    evaluation, so hyperparameters are tuned for what actually matters rather
+    than minimising a generic RMSE.
+    """
     def _objective(trial: optuna.Trial) -> float:
         params = {
             **config.XGB_FIXED_PARAMS,
@@ -125,7 +130,7 @@ def _build_optuna_objective(df: pd.DataFrame, num_classes: int,
             "reg_alpha":        trial.suggest_float("reg_alpha", 1e-4, 10.0, log=True),
             "reg_lambda":       trial.suggest_float("reg_lambda", 1e-4, 10.0, log=True),
         }
-        rmse_scores = []
+        game_scores = []
         for idx in tune_val_races:
             tr = df[df["race_idx"] < idx]
             te = df[df["race_idx"] == idx]
@@ -138,10 +143,18 @@ def _build_optuna_objective(df: pd.DataFrame, num_classes: int,
             m = xgb.XGBClassifier(**params)
             m.fit(X_tr, y_tr, sample_weight=w_tr, verbose=False)
 
-            pred_pos = m.predict_proba(X_te).argmax(axis=1) + 1
-            actual = te[config.TARGET_COL].astype(float).values
-            rmse_scores.append(np.sqrt(np.mean((pred_pos - actual) ** 2)))
-        return float(np.mean(rmse_scores)) if rmse_scores else float("inf")
+            prob_matrix = m.predict_proba(X_te)
+            drivers = te["Abbreviation"].tolist()
+            actual_positions = dict(
+                zip(te["Abbreviation"], te[config.TARGET_COL].astype(int), strict=False)
+            )
+            try:
+                top5 = hungarian_optimal_assignment(prob_matrix, drivers)
+                score = compute_scoring(top5, actual_positions)
+            except Exception:
+                score = 0
+            game_scores.append(score)
+        return float(np.mean(game_scores)) if game_scores else 0.0
     return _objective
 
 
@@ -168,7 +181,7 @@ def run_optuna(df: pd.DataFrame, num_classes: int) -> dict:
 
     optuna.logging.set_verbosity(optuna.logging.WARNING)
     study = optuna.create_study(
-        direction="minimize",
+        direction="maximize",
         sampler=optuna.samplers.TPESampler(seed=config.RANDOM_STATE),
     )
     study.optimize(
@@ -177,7 +190,7 @@ def run_optuna(df: pd.DataFrame, num_classes: int) -> dict:
         show_progress_bar=True,
     )
 
-    logger.info("Best RMSE (tuning 2022–2024): %.4f", study.best_value)
+    logger.info("Best game score (tuning 2022–2024): %.4f", study.best_value)
     logger.info("Best params:")
     for k, v in study.best_params.items():
         logger.info("  %s: %s", k, v)
