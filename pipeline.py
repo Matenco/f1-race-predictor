@@ -5,14 +5,12 @@ Runs the full pipeline end-to-end:
     1. extract historical data    (skipped if cache exists, unless --refresh)
     2. feature engineering
     3. model training              (skipped if model exists, unless --retrain)
-    4. predict next race
-    5. generate interactive HTML report
+    4. predict next race + generate interactive HTML report
 
 Usage:
     python pipeline.py                  # full run with sensible caching
     python pipeline.py --refresh        # re-pull all historical data
     python pipeline.py --retrain        # re-train the model from scratch
-    python pipeline.py --skip-eda       # skip the EDA figures
     python pipeline.py --rain           # mark next race as wet
 
 After the run finishes, the HTML report path is printed and (on most desktops)
@@ -51,8 +49,6 @@ def main() -> int:
                         help="Re-extract historical data from FastF1 (slow)")
     parser.add_argument("--retrain", action="store_true",
                         help="Re-train the model from scratch")
-    parser.add_argument("--skip-eda", action="store_true",
-                        help="Skip the EDA figure generation")
     parser.add_argument("--rain", action="store_true",
                         help="Set rain flag for the next race")
     parser.add_argument("--no-open", action="store_true",
@@ -81,25 +77,16 @@ def main() -> int:
     from src.feature_engineering import main as fe_main
     fe_main()
 
-    # 3. EDA (optional)
-    if not args.skip_eda:
-        _step("STEP 3/5: Exploratory data analysis")
-        from src.eda import main as eda_main
-        try:
-            eda_main()
-        except Exception as exc:
-            print(f"  (EDA failed: {exc} — continuing)")
-
-    # 4. Train (skip if model exists unless --retrain)
+    # 3. Train (skip if model exists unless --retrain)
     if args.retrain or not config.MODEL_FILE.exists():
-        _step("STEP 4/5: Train model")
+        _step("STEP 3/4: Train model")
         from src.train_model import main as train_main
         train_main()
     else:
         print(f"# Skipping training (model: {config.MODEL_FILE}); use --retrain to redo")
 
-    # 5. Predict + render HTML
-    _step("STEP 5/5: Predict next race and generate HTML report")
+    # 4. Predict + render HTML
+    _step("STEP 4/4: Predict next race and generate HTML report")
     from src.predict import predict_next_race
     from src.visualizer import render_html
 

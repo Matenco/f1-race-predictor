@@ -49,7 +49,7 @@ jobs:
             f1-prediction-history-${{ runner.os }}-
 
       - name: Run pipeline (refresh data + retrain model)
-        run: python pipeline.py --refresh --retrain --skip-eda --no-open
+        run: python pipeline.py --refresh --retrain --no-open
         env:
           PYTHONUNBUFFERED: "1"
 
