@@ -155,10 +155,14 @@ def _attach_qualifying(race_df: pd.DataFrame, year: int, round_number: int) -> p
         else:
             quali_df["QualiTime_s"] = np.nan
 
-        return race_df.merge(
+        race_df = race_df.merge(
             quali_df[["Abbreviation", "QualiPosition", "QualiTime_s"]],
             on="Abbreviation", how="left",
         )
+        # FastF1 sometimes omits GridPosition from race results but has it in
+        # the qualifying session — fill the gap so both sources are used.
+        race_df["GridPosition"] = race_df["GridPosition"].fillna(race_df["QualiPosition"])
+        return race_df
 
     except Exception as exc:
         logger.warning("    quali unavailable: %s", exc)

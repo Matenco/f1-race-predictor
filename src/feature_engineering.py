@@ -247,6 +247,7 @@ def build_features(historical_df: pd.DataFrame,
     df["Position"] = pd.to_numeric(df["Position"], errors="coerce")
     df["GridPosition"] = pd.to_numeric(df["GridPosition"], errors="coerce")
     df["QualiPosition"] = pd.to_numeric(df["QualiPosition"], errors="coerce")
+    df["GridPosition"] = df["GridPosition"].fillna(df["QualiPosition"])
     df = df.sort_values(["Date", "Round", "Position"]).reset_index(drop=True)
 
     df = _add_driver_form_features(df)

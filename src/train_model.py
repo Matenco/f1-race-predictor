@@ -88,10 +88,13 @@ def hungarian_optimal_assignment(prob_matrix: np.ndarray,
 
 
 def baseline_grid_top5(race_df: pd.DataFrame) -> list:
-    """Baseline: predict top 5 = grid positions 1–5."""
-    grid_sorted = race_df.dropna(subset=["GridPosition"]).sort_values("GridPosition")
+    """Baseline: predict top 5 = grid positions 1–5, falling back to QualiPosition."""
+    grid_col = "GridPosition"
+    if race_df["GridPosition"].isna().all() and "QualiPosition" in race_df.columns:
+        grid_col = "QualiPosition"
+    grid_sorted = race_df.dropna(subset=[grid_col]).sort_values(grid_col)
     top5 = grid_sorted.head(5)
-    return [(int(r["GridPosition"]), r["Abbreviation"]) for _, r in top5.iterrows()]
+    return [(int(r[grid_col]), r["Abbreviation"]) for _, r in top5.iterrows()]
 
 
 def baseline_form_top5(race_df: pd.DataFrame) -> list:
