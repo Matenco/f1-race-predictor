@@ -33,3 +33,4 @@ figures/                # Generated PNGs
 
 # Jupyter
 .ipynb_checkpoints/
+fastf1_cache/
