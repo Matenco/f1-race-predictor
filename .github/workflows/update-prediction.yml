@@ -48,37 +48,13 @@ jobs:
           restore-keys: |
             fastf1-cache-${{ runner.os }}-
 
-      # --- Trained model artifact ---
-      # We keep the trained model in a separate cache so we don't retrain on
-      # every cron run. Retraining happens weekly via a separate workflow or
-      # by manually deleting this cache.
-      - name: Restore trained model
-        uses: actions/cache@v4
-        with:
-          path: |
-            model/xgb_f1_final.json
-            model/xgb_top5_final.json
-            model/xgb_ranker_final.json
-            model/model_metadata.json
-            model/optuna_best_params.json
-            model/validation_history.json
-            data/processed/
-          key: f1-model-${{ hashFiles('src/**.py') }}
-          restore-keys: |
-            f1-model-
-
-      # --- Prediction history ---
-      # Stored separately so it accumulates across every run regardless of
-      # whether the model or source code changed. The run_id in the key
-      # guarantees a new cache entry is written each run; restore-keys picks
-      # the most recent previous entry.
-      - name: Restore prediction history
-        uses: actions/cache@v4
-        with:
-          path: model/prediction_history.json
-          key: f1-prediction-history-${{ runner.os }}-${{ github.run_id }}
-          restore-keys: |
-            f1-prediction-history-${{ runner.os }}-
+      # --- Trained model + processed data come from the repo ---
+      # The model bundle, processed CSVs and prediction history are committed to
+      # git, so checkout already put the exact artifacts the maintainer trained
+      # locally in place. We deliberately do NOT restore them from a cache here:
+      # the pipeline skips extraction (historical CSV exists) and training (model
+      # exists), so CI reproduces the locally-generated prediction. Retraining is
+      # done locally and pushed, never silently in the cloud.
 
       - name: Run pipeline (no auto-open browser)
         run: python pipeline.py --no-open

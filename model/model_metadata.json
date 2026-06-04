@@ -1,0 +1,73 @@
+{
+  "trained_at": "2026-06-04T13:01:17.442273",
+  "feature_cols": [
+    "driver_avg_pos_last3",
+    "driver_avg_pos_last5",
+    "driver_best_pos_last5",
+    "driver_std_pos_last5",
+    "driver_finish_rate_last10",
+    "driver_pos_trend",
+    "team_avg_pos_last3",
+    "team_best_pos_season",
+    "GridPosition",
+    "grid_vs_driver_form",
+    "teammate_pos_delta_last5",
+    "quali_time_delta_s",
+    "driver_track_avg",
+    "driver_track_count",
+    "driver_similar_circuits_avg",
+    "is_rain",
+    "season_race_number",
+    "regulation_era"
+  ],
+  "target_col": "Position",
+  "num_classes": 22,
+  "n_training_rows": 1924,
+  "training_seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+  ],
+  "xgb_params": {
+    "objective": "multi:softprob",
+    "random_state": 42,
+    "verbosity": 0,
+    "tree_method": "hist",
+    "num_class": 22,
+    "max_depth": 6,
+    "learning_rate": 0.14383435332930286,
+    "n_estimators": 323,
+    "subsample": 0.6958743053843363,
+    "colsample_bytree": 0.9207398377540517,
+    "min_child_weight": 1,
+    "reg_alpha": 0.015344002815054414,
+    "reg_lambda": 0.014121238711256992
+  },
+  "production_strategy": {
+    "ranker_objective": "rank:ndcg",
+    "candidate_pool": 7,
+    "ranker_grid_blend_weight": 0.1,
+    "ranker_top5_blend_weight": 0.75,
+    "top5_blend_weight": 0.65,
+    "dynamic_validation_weights": true,
+    "ranker_group_sample_weight": true
+  },
+  "validation_summary": {
+    "n_races": 28,
+    "xgboost_ranker_grid_top5_mean": 5.857142857142857,
+    "xgboost_ranker_grid_top5_std": 1.8799977485070387,
+    "xgboost_top5_ensemble_mean": 5.392857142857143,
+    "xgboost_top5_ensemble_std": 1.7499055152119818,
+    "xgboost_hungarian_mean": 5.25,
+    "xgboost_hungarian_std": 1.7769095101910528,
+    "baseline_grid_mean": 5.75,
+    "baseline_form_mean": 4.25,
+    "xgboost_ranker_top5_hits_mean": 4.0,
+    "baseline_grid_top5_hits_mean": 3.9285714285714284,
+    "xgboost_ranker_ndcg_at_5_mean": 0.8585640807928572,
+    "baseline_grid_ndcg_at_5_mean": 0.8531714367178571,
+    "rmse_mean": null
+  }
+}
