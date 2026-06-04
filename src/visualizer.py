@@ -7,7 +7,7 @@ Plotly charts are embedded inline so the file works offline once generated.
 Sections rendered:
 1. Hero card: race name, date, circuit, mode (blind / informed)
 2. Top-5 prediction with per-position confidence bars
-3. Probability heatmap: P(position j | driver i) for the top 12 drivers
+3. Probability heatmap: P(position j | driver i) for the predicted top 5 drivers
 4. Monte Carlo bar chart: P(win) / P(podium) / P(top 5)
 5. Most likely top-5 combinations table
 6. Model validation summary (so the reader knows the historical accuracy)
@@ -102,20 +102,26 @@ def _build_validation_history_chart(pred: RacePrediction) -> go.Figure | None:
         return s.rolling(window=w, min_periods=1).mean()
 
     fig = go.Figure()
+    if "XGBoost_Ranker_GridTop5" in vh.columns:
+        model_col = "XGBoost_Ranker_GridTop5"
+    elif "XGBoost_Top5_Ensemble" in vh.columns:
+        model_col = "XGBoost_Top5_Ensemble"
+    else:
+        model_col = "XGBoost_Hungarian"
     fig.add_trace(go.Scatter(
-        x=x, y=vh["XGBoost_Hungarian"],
+        x=x, y=vh[model_col],
         mode="lines+markers",
-        name="XGBoost + Hungarian",
+        name="XGBoost ranker",
         line={"color": COLOURS["accent"], "width": 1},
         marker={"size": 6},
         opacity=0.55,
-        hovertemplate="<b>%{customdata}</b><br>XGBoost: %{y}/10<extra></extra>",
+        hovertemplate="<b>%{customdata}</b><br>Model: %{y}/10<extra></extra>",
         customdata=vh["label"],
     ))
     fig.add_trace(go.Scatter(
-        x=x, y=_roll(vh["XGBoost_Hungarian"]),
+        x=x, y=_roll(vh[model_col]),
         mode="lines",
-        name="XGBoost (5-race avg)",
+        name="Model (5-race avg)",
         line={"color": COLOURS["accent"], "width": 3},
         hoverinfo="skip",
     ))
@@ -200,8 +206,8 @@ def _build_top5_chart(pred: RacePrediction) -> go.Figure:
 
 
 def _build_probability_heatmap(pred: RacePrediction) -> go.Figure:
-    """Heatmap of P(finish position j | driver i) for the top 12 drivers."""
-    drivers_sorted = sorted(pred.drivers, key=lambda d: d.p_top5, reverse=True)[:12]
+    """Heatmap of P(finish position j | driver i) for the predicted top 5 drivers."""
+    drivers_sorted = sorted(pred.drivers, key=lambda d: d.p_top5, reverse=True)[:5]
     z = np.array([d.prob_per_position for d in drivers_sorted]) * 100
     y_labels = [f"{d.abbreviation}  ({d.p_top5:.0%})" for d in drivers_sorted]
     x_labels = ["P1", "P2", "P3", "P4", "P5"]
@@ -238,8 +244,10 @@ def _build_probability_heatmap(pred: RacePrediction) -> go.Figure:
 
 
 def _build_monte_carlo_chart(pred: RacePrediction) -> go.Figure:
-    """Grouped bars: P(win), P(podium), P(top 5) for the top 12 drivers."""
-    sorted_drivers = sorted(pred.drivers, key=lambda d: d.p_top5, reverse=True)[:12]
+    """Grouped bars: P(win), P(podium), P(top 5) for the predicted top 5 drivers."""
+    predicted = {drv for _, drv in pred.predicted_top5}
+    sorted_drivers = [d for d in sorted(pred.drivers, key=lambda d: d.p_top5, reverse=True)
+                      if d.abbreviation in predicted]
     abbrs = [d.abbreviation for d in sorted_drivers]
     p_wins = [d.p_win * 100 for d in sorted_drivers]
     p_podiums = [d.p_podium * 100 for d in sorted_drivers]
@@ -498,7 +506,7 @@ _HTML_TEMPLATE = """<!DOCTYPE html>
     <div class="badges">
       <span class="badge">Round {round_number} of {year}</span>
       <span class="badge">{mode_label}</span>
-      <span class="badge">XGBoost + Hungarian assignment</span>
+      <span class="badge">XGBoost top-5/ranker + grid P1-P7</span>
       <span class="badge">{n_sim:,} Monte Carlo runs</span>
     </div>
   </div>
@@ -510,7 +518,8 @@ _HTML_TEMPLATE = """<!DOCTYPE html>
   <div class="grid-2">
     <div class="card">
       <h2>Predicted Top 5</h2>
-      <div class="card-subtitle">Optimal assignment via Hungarian algorithm</div>
+      <div class="card-subtitle">{race_name} &middot; {race_date}</div>
+      <div class="card-subtitle">Grid Top 5 ordered by XGBoost ranker</div>
       <div class="top5-list">{top5_html}</div>
       {sixth_html}
     </div>
@@ -616,14 +625,31 @@ def _render_validation_stats(pred: RacePrediction) -> str:
             "<div class='stat'><div class='stat-value'>—</div>"
             "<div class='stat-label'>No validation data saved</div></div>"
         )
+    def _fmt(value: object, digits: int = 2) -> str:
+        if value is None:
+            return "n/a"
+        try:
+            numeric = float(value)
+        except (TypeError, ValueError):
+            return "n/a"
+        if pd.isna(numeric):
+            return "n/a"
+        return f"{numeric:.{digits}f}"
+
     items = [
-        ("XGBoost + Hungarian", f"{summary.get('xgboost_hungarian_mean', 0):.2f}",
-         f"± {summary.get('xgboost_hungarian_std', 0):.2f} pts/race"),
-        ("Grid baseline", f"{summary.get('baseline_grid_mean', 0):.2f}",
+        ("XGBoost ranker", _fmt(summary.get("xgboost_ranker_grid_top5_mean")),
+         f"± {_fmt(summary.get('xgboost_ranker_grid_top5_std'))} pts/race"),
+        ("XGBoost + Hungarian", _fmt(summary.get("xgboost_hungarian_mean")),
+         f"± {_fmt(summary.get('xgboost_hungarian_std'))} pts/race"),
+        ("Grid baseline", _fmt(summary.get("baseline_grid_mean")),
          "pts/race"),
-        ("Form baseline", f"{summary.get('baseline_form_mean', 0):.2f}",
+        ("Form baseline", _fmt(summary.get("baseline_form_mean")),
          "pts/race"),
-        ("Position RMSE", f"{summary.get('rmse_mean', 0):.2f}",
+        ("Ranker NDCG@5", _fmt(summary.get("xgboost_ranker_ndcg_at_5_mean"), 3),
+         "ranking quality"),
+        ("Grid NDCG@5", _fmt(summary.get("baseline_grid_ndcg_at_5_mean"), 3),
+         "ranking baseline"),
+        ("Position RMSE", _fmt(summary.get("rmse_mean")),
          "predicted vs actual"),
         ("Validation races", f"{summary.get('n_races', 0)}",
          "walk-forward CV"),
@@ -640,16 +666,27 @@ def _render_validation_prose(pred: RacePrediction) -> str:
     summary = pred.model_validation_summary
     if not summary:
         return ""
-    xgb_mean = summary.get("xgboost_hungarian_mean", 0)
+    xgb_mean = summary.get(
+        "xgboost_ranker_grid_top5_mean",
+        summary.get("xgboost_top5_ensemble_mean", summary.get("xgboost_hungarian_mean", 0)),
+    )
     grid_mean = summary.get("baseline_grid_mean", 0)
     form_mean = summary.get("baseline_form_mean", 0)
+    ranker_ndcg = summary.get("xgboost_ranker_ndcg_at_5_mean")
+    grid_ndcg = summary.get("baseline_grid_ndcg_at_5_mean")
     n_races = int(summary.get("n_races", 0))
 
     n_beat_grid = n_beat_form = 0
     if pred.validation_history:
         vh = pd.DataFrame(pred.validation_history)
-        n_beat_grid = int((vh["XGBoost_Hungarian"] > vh["Baseline_Grid"]).sum())
-        n_beat_form = int((vh["XGBoost_Hungarian"] > vh["Baseline_Form"]).sum())
+        if "XGBoost_Ranker_GridTop5" in vh.columns:
+            model_col = "XGBoost_Ranker_GridTop5"
+        elif "XGBoost_Top5_Ensemble" in vh.columns:
+            model_col = "XGBoost_Top5_Ensemble"
+        else:
+            model_col = "XGBoost_Hungarian"
+        n_beat_grid = int((vh[model_col] > vh["Baseline_Grid"]).sum())
+        n_beat_form = int((vh[model_col] > vh["Baseline_Form"]).sum())
 
     lift_grid = xgb_mean - grid_mean
     lift_form = xgb_mean - form_mean
@@ -675,6 +712,11 @@ def _render_validation_prose(pred: RacePrediction) -> str:
             f"<b>{n_beat_grid}/{n_races} races ({n_beat_grid/n_races:.0%})</b> "
             f"and the form baseline in <b>{n_beat_form}/{n_races} races "
             f"({n_beat_form/n_races:.0%})</b>.</p>"
+        )
+    if ranker_ndcg is not None and grid_ndcg is not None:
+        parts.append(
+            f"<p>For ranking quality, the model's <b>NDCG@5 is {ranker_ndcg:.3f}</b> "
+            f"versus <b>{grid_ndcg:.3f}</b> for the grid baseline.</p>"
         )
     return f"<div class='val-prose'>{''.join(parts)}</div>"
 

@@ -8,6 +8,7 @@ import pytest
 
 from src import config
 from src.feature_engineering import build_features
+from src.train_model import compute_training_weights
 
 
 @pytest.fixture
@@ -72,6 +73,20 @@ def test_sample_weights_sum_positive(features: pd.DataFrame):
     w = features["sample_weight"]
     assert (w > 0).all()
     assert w.max() <= 1.0 + 1e-9
+
+
+def test_training_weights_are_relative_to_target_date(features: pd.DataFrame):
+    """Walk-forward weights should be recomputed for the race being predicted."""
+    early_target = pd.Timestamp("2023-01-01")
+    late_target = pd.Timestamp("2026-01-01")
+
+    early_weights = compute_training_weights(features, early_target)
+    late_weights = compute_training_weights(features, late_target)
+
+    first_race_idx = features["Date"].idxmin()
+    assert late_weights.loc[first_race_idx] < early_weights.loc[first_race_idx]
+    assert early_weights.max() <= 1.0 + 1e-9
+    assert late_weights.max() <= 1.0 + 1e-9
 
 
 def test_regulation_era_flag_is_correct(features: pd.DataFrame):

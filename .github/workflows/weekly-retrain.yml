@@ -52,6 +52,7 @@ jobs:
         run: python pipeline.py --refresh --retrain --no-open
         env:
           PYTHONUNBUFFERED: "1"
+          MPLCONFIGDIR: ${{ github.workspace }}/.matplotlib
 
       # Save updated model to cache so the 6-hourly workflow picks it up
       - name: Save retrained model
@@ -59,6 +60,8 @@ jobs:
         with:
           path: |
             model/xgb_f1_final.json
+            model/xgb_top5_final.json
+            model/xgb_ranker_final.json
             model/model_metadata.json
             model/optuna_best_params.json
             model/validation_history.json

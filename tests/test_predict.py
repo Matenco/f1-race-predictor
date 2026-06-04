@@ -25,6 +25,7 @@ from src.train_model import (
     baseline_grid_top5,
     compute_scoring,
     hungarian_optimal_assignment,
+    ranker_grid_top5_assignment,
 )
 
 
@@ -88,6 +89,47 @@ def test_hungarian_beats_or_matches_greedy_on_scoring():
     assert n_better >= int(n_total * 0.7), (
         f"Hungarian only matched/beat greedy in {n_better}/{n_total}"
     )
+
+
+def test_ranker_grid_assignment_can_swap_from_candidate_pool():
+    """A strong enough selection score may promote P6/P7 into the final top 5."""
+    race_df = pd.DataFrame({
+        "Abbreviation": ["A", "B", "C", "D", "E", "F", "G"],
+        "GridPosition": [1, 2, 3, 4, 5, 6, 7],
+        "QualiPosition": [1, 2, 3, 4, 5, 6, 7],
+    })
+    ranker_scores = np.zeros(len(race_df))
+    selection_scores = np.array([0.5, 0.5, 0.5, 0.5, 0.1, 1.0, 0.1])
+
+    top5 = ranker_grid_top5_assignment(
+        race_df,
+        ranker_scores,
+        selection_scores=selection_scores,
+        candidate_pool=7,
+        ranker_weight=0.0,
+        selection_weight=2.0,
+    )
+
+    assert "F" in [driver for _, driver in top5]
+
+
+def test_ranker_grid_assignment_pool5_keeps_grid_top5_set():
+    """With candidate_pool=5, only the grid top five can be reordered."""
+    race_df = pd.DataFrame({
+        "Abbreviation": ["A", "B", "C", "D", "E", "F"],
+        "GridPosition": [1, 2, 3, 4, 5, 6],
+        "QualiPosition": [1, 2, 3, 4, 5, 6],
+    })
+    top5 = ranker_grid_top5_assignment(
+        race_df,
+        ranker_scores=np.zeros(len(race_df)),
+        selection_scores=np.array([0.1, 0.1, 0.1, 0.1, 0.1, 10.0]),
+        candidate_pool=5,
+        ranker_weight=0.0,
+        selection_weight=10.0,
+    )
+
+    assert {driver for _, driver in top5} == {"A", "B", "C", "D", "E"}
 
 
 # =============================================================================

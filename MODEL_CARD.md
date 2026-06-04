@@ -7,13 +7,17 @@ practitioners look for when assessing third-party ML systems.
 
 ## Model details
 
-- **Model type**: gradient-boosted decision-tree classifier (XGBoost,
-  `multi:softprob` objective)
-- **Output**: a probability matrix `P(driver i finishes at position j)` for
-  20 positions, post-processed by the Hungarian algorithm into a single
-  top-5 assignment that maximises expected scoring-rule points
-- **Hyperparameters**: tuned via Optuna (TPE sampler, 50 trials) on
-  2022–2024 data; full parameter set saved in `model/optuna_best_params.json`
+- **Model type**: XGBoost ranker (`rank:pairwise`) for the deployed top-5
+  ordering, plus diagnostic XGBoost classifiers for finishing position and
+  top-5 membership
+- **Output**: the production prediction starts from grid candidates P1-P7
+  and selects the final top five with a blend of grid order, dedicated top-5
+  probability, and a lightly weighted `rank:ndcg` ranker. This is deliberately
+  grid-aware because the starting grid is the strongest baseline available
+  after qualifying.
+- **Hyperparameters**: the multiclass position model uses saved Optuna params
+  in `model/optuna_best_params.json`; the ranker uses conservative fixed
+  parameters stored in `src/config.py`
 - **Training framework**: XGBoost 2.x on CPU (`tree_method=hist`)
 - **License**: MIT
 
@@ -22,8 +26,8 @@ practitioners look for when assessing third-party ML systems.
 - **Primary**: predicting the top 5 of an upcoming Formula 1 Grand Prix for
   prediction-game scoring (2 points exact-position, 1 point in-top-5 miss)
 - **Secondary**: portfolio / educational reference for time-series feature
-  engineering, leakage-safe rolling statistics, and Hungarian assignment as
-  a post-processing step on classifier probability matrices
+  engineering, leakage-safe rolling statistics, and learning-to-rank for a
+  strong sports baseline
 
 This is **not** designed for, and should **not** be used for**:**
 
@@ -69,10 +73,10 @@ with limited overtaking).
 Time decay with regulation-era boost:
 
 ```
-weight ∝ 0.5 ** (days_to_target / 365)   × 3.0 if year ≥ 2026 else 1.0
+weight ∝ 0.5 ** (days_to_target / 365)   × 1.5 if year ≥ 2026 else 1.0
 ```
 
-Older races contribute less; the new 2026 regulation era gets a 3× boost
+Older races contribute less; the new 2026 regulation era gets a 1.5× boost
 to mitigate the small-sample problem early in the season. Weights are
 normalised to `[0, 1]`.
 
@@ -82,7 +86,7 @@ normalised to `[0, 1]`.
 2025–2026 validation window:
 
 1. Train on every race chronologically before it
-2. Predict the top 5 using XGBoost + Hungarian
+2. Predict the top 5 using the ranker-grid production model
 3. Score against actual finish order
 4. Compare against two baselines: the starting grid as-is, and recent-form
    ranking
@@ -93,14 +97,20 @@ Optuna hyperparameter tuning runs only on 2022–2024 data, holding out
 ## Performance summary
 
 Last evaluated on real data — see `model/model_metadata.json` for current
-numbers. Reference numbers from a pre-Miami 2026 run:
+numbers. Current walk-forward validation uses 28 held-out races in 2025–2026
+after filling missing 2024–2025 races and filtering incomplete FastF1 pulls.
 
-| Method                | Mean pts/race | Std  | Position RMSE |
-|-----------------------|---------------|------|---------------|
-| XGBoost + Hungarian   | 7.38          | 2.79 | —             |
-| Baseline: grid        | 5.92          | 2.41 | —             |
-| Baseline: recent form | 4.35          | 2.18 | —             |
-| Argmax position       | —             | —    | 2.6 places    |
+| Method                         | Mean pts/race | Std  | Notes |
+|--------------------------------|---------------|------|-------|
+| XGBoost top-5/ranker + grid P1-P7 | 5.86       | 1.88 | deployed strategy |
+| XGBoost position + Hungarian   | 5.25          | 1.78 | previous approach |
+| XGBoost top-5 ensemble         | 5.39          | 1.75 | tested, not deployed |
+| Baseline: grid                 | 5.75          | 1.90 | strongest points baseline |
+| Baseline: recent form          | 4.25          | 1.14 | secondary baseline |
+
+The deployed strategy beats the grid baseline in the project-game points
+metric (5.86 vs 5.75), improves mean top-5 set hits (4.00 vs 3.93), and
+improves ranking quality (`NDCG@5`: 0.859 vs 0.853).
 
 ## Known limitations and biases
 
@@ -108,6 +118,13 @@ numbers. Reference numbers from a pre-Miami 2026 run:
   available, predictions for early-2026 events lean on 2022–2025 priors
   and may underweight pace shifts. Sample weights mitigate but don't
   eliminate this.
+- **Incomplete API pulls are filtered, not imputed.** FastF1/Jolpica can
+  return driver/session metadata before official result data is available or
+  while rate-limited. The pipeline drops races with too few classified
+  finishers; rerunning after the API limit clears should add more races.
+- **The deployed model is grid-aware.** It can promote P6/P7 into the final
+  top five, but only through a controlled blend that keeps grid order as the
+  dominant prior.
 - **DNF causality is implicit.** Per-driver DNF rates are captured via
   `driver_finish_rate_last10`, but the model doesn't condition on
   race-day incidents (safety cars, mechanical failures, weather changes
@@ -127,12 +144,10 @@ numbers. Reference numbers from a pre-Miami 2026 run:
 
 ## Update cadence
 
-- **Data refresh**: weekly (cron schedule in
-  `.github/workflows/update-prediction.yml`)
-- **Model retraining**: triggered by changes to `src/**` or by manually
-  clearing the model cache. The current implementation uses a single
-  cached model across cron runs; production systems would benefit from
-  drift monitoring before retrains.
+- **Data refresh and retraining**: weekly via
+  `.github/workflows/weekly-retrain.yml`
+- **Prediction refresh**: every 6 hours via
+  `.github/workflows/update-prediction.yml`
 - **Hyperparameter retuning**: manual; saved Optuna params are reused
   unless `USE_SAVED_OPTUNA_PARAMS = False` in `src/config.py`.
 

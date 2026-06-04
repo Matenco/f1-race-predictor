@@ -23,6 +23,8 @@ for d in (DATA_DIR, CACHE_DIR, MODEL_DIR, FIGURES_DIR, PREDICTIONS_DIR):
 HISTORICAL_FILE = DATA_DIR / "f1_historical.csv"
 FEATURES_FILE = DATA_DIR / "f1_features.csv"
 MODEL_FILE = MODEL_DIR / "xgb_f1_final.json"
+TOP5_MODEL_FILE = MODEL_DIR / "xgb_top5_final.json"
+RANKER_MODEL_FILE = MODEL_DIR / "xgb_ranker_final.json"
 MODEL_META_FILE = MODEL_DIR / "model_metadata.json"
 OPTUNA_BEST_PARAMS_FILE = MODEL_DIR / "optuna_best_params.json"
 PREDICTION_HISTORY_FILE = MODEL_DIR / "prediction_history.json"
@@ -31,6 +33,7 @@ VALIDATION_HISTORY_FILE = MODEL_DIR / "validation_history.json"
 # --- Data extraction ---
 # Default: 2022 (start of current technical era) to current year
 SEASONS: list[int] = list(range(2022, datetime.now().year + 1))
+MIN_CLASSIFIED_DRIVERS = 10     # Minimum classified finishers for a race to be usable
 
 # --- Feature engineering ---
 WEIGHT_HALF_LIFE_DAYS = 365     # Time-decay half-life for sample weights
@@ -70,6 +73,10 @@ RANDOM_STATE = 42
 
 # --- Training ---
 N_OPTUNA_TRIALS = 50            # Set to 0 to skip tuning and load saved best params
+TOP5_BLEND_WEIGHT = 0.65        # Weight of the dedicated top-5 model in selection EV
+RANKER_GRID_BLEND_WEIGHT = 0.1  # Strength of ranker reordering inside grid candidates
+RANKER_TOP5_BLEND_WEIGHT = 0.75 # P(top5) signal for controlled grid P6/P7 swaps
+RANKER_CANDIDATE_POOL = 7       # Grid candidates considered for final top 5
 MIN_TRAIN_RACES = 40            # Minimum number of past races before a race becomes part of validation
 USE_SAVED_OPTUNA_PARAMS = False  # If True and saved params exist, skip new tuning
 
@@ -93,9 +100,22 @@ XGB_DEFAULT_PARAMS = {
     "reg_lambda":       1.0,
 }
 
+XGB_RANKER_PARAMS = {
+    "objective":        "rank:ndcg",
+    "n_estimators":     160,
+    "max_depth":        3,
+    "learning_rate":    0.05,
+    "subsample":        0.9,
+    "colsample_bytree": 0.9,
+    "min_child_weight": 5,
+    "random_state":     RANDOM_STATE,
+    "tree_method":      "hist",
+    "verbosity":        0,
+}
+
 # --- Prediction ---
 N_SIMULATIONS = 10_000          # Monte Carlo iterations
-TOP_N_COMBOS = 10               # Most-likely combinations to display
+TOP_N_COMBOS = 5                # Most-likely top-5 combinations to display
 
 # --- Scoring rule (used by Hungarian assignment + validation) ---
 SCORE_EXACT_HIT = 2             # Points for predicting exact position
