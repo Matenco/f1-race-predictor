@@ -27,9 +27,11 @@ Thumbs.db
 # Project-specific
 # NOTE: keep comments on their own line — git treats trailing "# ..." as part
 # of the pattern, so "cache/  # foo" silently matches nothing.
+#
+# model/ and data/processed/ are intentionally TRACKED so a fresh clone (and CI)
+# reproduces the exact prediction produced locally. Only the large FastF1 HTTP
+# cache, generated HTML reports and PNG figures stay out of the repo.
 cache/
-data/processed/
-model/
 predictions/
 figures/
 *.log
