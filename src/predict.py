@@ -6,7 +6,7 @@ End-to-end prediction:
 2. Build a feature row for every active driver, computed as of "now"
    (correctly — no shift-based heuristics)
 3. Run the trained XGBoost model to get the probability matrix
-4. Apply Hungarian assignment for the optimal top 5
+4. Apply the grid-aware ranker for the final top 5 order
 5. Run Monte Carlo simulation for win/podium/top5 probabilities
 6. Return everything as a dataclass for downstream visualisation
 
@@ -33,7 +33,12 @@ import xgboost as xgb
 from . import config
 from .circuit_metadata import get_similar_circuits
 from .next_race import NextRace, get_next_race
-from .train_model import compute_scoring, hungarian_optimal_assignment
+from .train_model import (
+    _blended_top5_probability,
+    compute_scoring,
+    hungarian_optimal_assignment,
+    ranker_grid_top5_assignment,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -343,6 +348,14 @@ def predict_next_race(grid_positions: dict[str, int] | None = None,
 
     model = xgb.XGBClassifier()
     model.load_model(str(config.MODEL_FILE))
+    top5_model = None
+    if config.TOP5_MODEL_FILE.exists():
+        top5_model = xgb.XGBClassifier()
+        top5_model.load_model(str(config.TOP5_MODEL_FILE))
+    ranker_model = None
+    if config.RANKER_MODEL_FILE.exists():
+        ranker_model = xgb.XGBRanker()
+        ranker_model.load_model(str(config.RANKER_MODEL_FILE))
 
     # 3. If no grid given but the API reports quali done, try fetching it
     mode = "informed" if grid_positions is not None else (
@@ -366,15 +379,29 @@ def predict_next_race(grid_positions: dict[str, int] | None = None,
     X_pred = next_race_df[config.FEATURE_COLS]
     drivers_list = next_race_df["Abbreviation"].tolist()
     prob_matrix = model.predict_proba(X_pred)
+    if top5_model is not None:
+        top5_prob = top5_model.predict_proba(X_pred)[:, 1]
+        selection_top5 = _blended_top5_probability(prob_matrix, top5_prob)
+    else:
+        selection_top5 = prob_matrix[:, :5].sum(axis=1)
 
-    # 6. Hungarian optimal assignment
-    predicted_top5 = hungarian_optimal_assignment(prob_matrix, drivers_list)
+    # 6. Final top-5 assignment. The validated production model keeps the
+    # grid baseline's strongest candidates and uses a ranker to optimise order.
+    if ranker_model is not None:
+        ranker_scores = ranker_model.predict(X_pred)
+        predicted_top5 = ranker_grid_top5_assignment(
+            next_race_df, ranker_scores, selection_scores=selection_top5,
+        )
+    else:
+        predicted_top5 = hungarian_optimal_assignment(
+            prob_matrix, drivers_list, p_top5_override=selection_top5,
+        )
 
     # 7. Monte Carlo simulation
     mc = monte_carlo_simulation(prob_matrix, drivers_list)
 
     # 8. Build per-driver result objects
-    p_top5 = prob_matrix[:, :5].sum(axis=1)
+    p_top5 = selection_top5
     driver_results: list[DriverPrediction] = []
     for i, drv in enumerate(drivers_list):
         meta = next_race_df.iloc[i]

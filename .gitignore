@@ -25,11 +25,13 @@ Thumbs.db
 .Rhistory
 
 # Project-specific
-cache/                  # FastF1 cache (~hundreds of MB)
-data/processed/         # Generated CSVs
-model/                  # Saved models + metadata
-predictions/            # Generated HTML reports
-figures/                # Generated PNGs
+# NOTE: keep comments on their own line — git treats trailing "# ..." as part
+# of the pattern, so "cache/  # foo" silently matches nothing.
+cache/
+data/processed/
+model/
+predictions/
+figures/
 *.log
 
 # Jupyter

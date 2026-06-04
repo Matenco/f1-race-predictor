@@ -117,6 +117,13 @@ def extract_race_data(year: int, round_number: int) -> pd.DataFrame | None:
         race_df["Country"] = race.event["Country"]
         race_df["Date"] = race.event["EventDate"]
 
+        if not _has_enough_results(race_df):
+            logger.warning(
+                "    skipping incomplete results: only %d classified positions",
+                int(race_df["Position"].notna().sum()),
+            )
+            return None
+
         return race_df
 
     except RateLimitHit:
@@ -185,6 +192,12 @@ def _attach_weather(race_df: pd.DataFrame, race) -> pd.DataFrame:
         race_df["Humidity"] = np.nan
         race_df["Rainfall"] = False
     return race_df
+
+
+def _has_enough_results(race_df: pd.DataFrame) -> bool:
+    """Return True when a race has enough classified finish positions to train on."""
+    positions = pd.to_numeric(race_df["Position"], errors="coerce")
+    return int(positions.notna().sum()) >= config.MIN_CLASSIFIED_DRIVERS
 
 
 # =============================================================================
@@ -257,6 +270,16 @@ def _merge_with_existing(new_df: pd.DataFrame) -> pd.DataFrame:
         logger.warning("Could not read existing CSV (%s); starting fresh", exc)
         return new_df
     combined = pd.concat([existing, new_df], ignore_index=True)
+    combined["Position"] = pd.to_numeric(combined["Position"], errors="coerce")
+    complete_races = (
+        combined.groupby(["Year", "Round"])["Position"]
+        .transform(lambda s: s.notna().sum())
+        >= config.MIN_CLASSIFIED_DRIVERS
+    )
+    dropped = int((~complete_races).sum())
+    if dropped:
+        logger.warning("Dropping %d rows from incomplete races before saving", dropped)
+    combined = combined[complete_races].copy()
     combined = combined.drop_duplicates(
         subset=["Year", "Round", "Abbreviation"], keep="last",
     )

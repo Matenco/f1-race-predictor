@@ -77,13 +77,17 @@ def main() -> int:
     from src.feature_engineering import main as fe_main
     fe_main()
 
-    # 3. Train (skip if model exists unless --retrain)
-    if args.retrain or not config.MODEL_FILE.exists():
+    # 3. Train (skip if the complete model bundle exists unless --retrain)
+    if (
+        args.retrain
+        or not config.MODEL_FILE.exists()
+        or not config.RANKER_MODEL_FILE.exists()
+    ):
         _step("STEP 3/4: Train model")
         from src.train_model import main as train_main
         train_main()
     else:
-        print(f"# Skipping training (model: {config.MODEL_FILE}); use --retrain to redo")
+        print(f"# Skipping training (model bundle: {config.MODEL_DIR}); use --retrain to redo")
 
     # 4. Predict + render HTML
     _step("STEP 4/4: Predict next race and generate HTML report")

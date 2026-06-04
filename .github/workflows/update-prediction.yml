@@ -57,6 +57,8 @@ jobs:
         with:
           path: |
             model/xgb_f1_final.json
+            model/xgb_top5_final.json
+            model/xgb_ranker_final.json
             model/model_metadata.json
             model/optuna_best_params.json
             model/validation_history.json
@@ -79,9 +81,10 @@ jobs:
             f1-prediction-history-${{ runner.os }}-
 
       - name: Run pipeline (no auto-open browser)
-        run: python pipeline.py --skip-eda --no-open
+        run: python pipeline.py --no-open
         env:
           PYTHONUNBUFFERED: "1"
+          MPLCONFIGDIR: ${{ github.workspace }}/.matplotlib
 
       # --- Stage HTML for Pages ---
       - name: Prepare publish directory

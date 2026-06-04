@@ -27,6 +27,49 @@ logger = logging.getLogger(__name__)
 
 
 # =============================================================================
+#  Data quality helpers
+# =============================================================================
+def _drop_incomplete_races(df: pd.DataFrame) -> pd.DataFrame:
+    """Remove races without enough classified finishers.
+
+    FastF1 can return driver/session metadata before official race results are
+    available. Keeping those rows creates all-NaN target races and contaminates
+    rolling features for later events.
+    """
+    complete_races = (
+        df.groupby(["Year", "Round"])["Position"]
+        .transform(lambda s: s.notna().sum())
+        >= config.MIN_CLASSIFIED_DRIVERS
+    )
+    dropped_races = df.loc[~complete_races, ["Year", "Round"]].drop_duplicates()
+    if len(dropped_races) > 0:
+        logger.warning("Dropping %d incomplete races from feature build", len(dropped_races))
+    return df[complete_races].copy()
+
+
+def _normalise_grid_positions(df: pd.DataFrame) -> pd.DataFrame:
+    """Turn FastF1 grid placeholders into a usable start-order feature.
+
+    FastF1 uses GridPosition=0 for pit-lane starts. Sorting that as-is makes a
+    pit-lane starter look better than pole, so map non-positive values to the
+    back of that race's grid. Missing grid values still fall back to qualifying.
+    """
+    df["GridPosition"] = df["GridPosition"].fillna(df["QualiPosition"])
+
+    def _fix_race_grid(g: pd.Series) -> pd.Series:
+        out = pd.to_numeric(g, errors="coerce").copy()
+        positive = out[out > 0]
+        if len(positive) == 0:
+            return out
+        back_marker = float(positive.max() + 1)
+        out[out <= 0] = back_marker
+        return out
+
+    df["GridPosition"] = df.groupby(["Year", "Round"])["GridPosition"].transform(_fix_race_grid)
+    return df
+
+
+# =============================================================================
 #  Helpers: leakage-free rolling and expanding statistics per driver
 # =============================================================================
 def _driver_rolling(df: pd.DataFrame, col: str, window: int,
@@ -247,7 +290,8 @@ def build_features(historical_df: pd.DataFrame,
     df["Position"] = pd.to_numeric(df["Position"], errors="coerce")
     df["GridPosition"] = pd.to_numeric(df["GridPosition"], errors="coerce")
     df["QualiPosition"] = pd.to_numeric(df["QualiPosition"], errors="coerce")
-    df["GridPosition"] = df["GridPosition"].fillna(df["QualiPosition"])
+    df = _drop_incomplete_races(df)
+    df = _normalise_grid_positions(df)
     df = df.sort_values(["Date", "Round", "Position"]).reset_index(drop=True)
 
     df = _add_driver_form_features(df)
