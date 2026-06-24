@@ -91,6 +91,7 @@ class RacePrediction:
     model_validation_summary: dict = field(default_factory=dict)
     last_race_recap: LastRaceRecap | None = None
     validation_history: list[dict] = field(default_factory=list)
+    predicted_at: datetime = field(default_factory=datetime.utcnow)
 
 
 # =============================================================================
@@ -496,6 +497,14 @@ def _load_prediction_history() -> list[dict]:
         return []
 
 
+def _write_prediction_history(history: list[dict]) -> None:
+    """Write the prediction history to disk."""
+    history.sort(key=lambda h: (h["race"]["year"], h["race"]["round"]))
+    config.PREDICTION_HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with open(config.PREDICTION_HISTORY_FILE, "w") as f:
+        json.dump(history, f, indent=2)
+
+
 def _save_prediction_to_history(pred: RacePrediction) -> None:
     """Append the current prediction to the history file (deduplicated by race)."""
     history = _load_prediction_history()
@@ -506,7 +515,7 @@ def _save_prediction_to_history(pred: RacePrediction) -> None:
         if (h["race"]["year"], h["race"]["round"]) != race_key
     ]
     history.append({
-        "predicted_at": datetime.utcnow().isoformat() + "Z",
+        "predicted_at": pred.predicted_at.isoformat() + "Z",
         "race": {
             "name": str(pred.next_race.name),
             "year": int(pred.next_race.year),
@@ -515,12 +524,10 @@ def _save_prediction_to_history(pred: RacePrediction) -> None:
             "date": pred.next_race.date.strftime("%Y-%m-%d"),
         },
         "mode": pred.mode,
+        "status": "pending",
         "predicted_top5": [[int(p), str(d)] for p, d in pred.predicted_top5],
     })
-    history.sort(key=lambda h: (h["race"]["year"], h["race"]["round"]))
-    config.PREDICTION_HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(config.PREDICTION_HISTORY_FILE, "w") as f:
-        json.dump(history, f, indent=2)
+    _write_prediction_history(history)
     logger.info("Saved prediction to history: %s", config.PREDICTION_HISTORY_FILE)
 
 
@@ -568,63 +575,111 @@ def _build_last_race_recap(current_race: NextRace) -> LastRaceRecap | None:
     current_key = (current_race.year, current_race.round_number)
 
     # Check predictions newest-first
-    for entry in reversed(history):
+    for idx in range(len(history) - 1, -1, -1):
+        entry = history[idx]
         race = entry["race"]
         if (race["year"], race["round"]) == current_key:
             continue   # this is the upcoming race — skip
+        if entry.get("scorecard"):
+            return _recap_from_history_entry(entry)
+
         actual = _fetch_actual_race_results(race["year"], race["round"])
         if actual is None:
             continue   # not run yet, or API hiccup; try next-newest
 
-        predicted = [(int(p), str(d)) for p, d in entry["predicted_top5"]]
-        score = compute_scoring(predicted, actual)
-
-        # Compute grid baseline for the same race
-        grid_baseline_top5: list[tuple[int, str]] = []
-        try:
-            import fastf1
-            grid_session = fastf1.get_session(race["year"], race["round"], "R")
-            grid_session.load(laps=False, telemetry=False, weather=False, messages=False)
-            grid_results = grid_session.results.dropna(subset=["GridPosition"])
-            grid_results = grid_results.sort_values("GridPosition").head(5)
-            grid_baseline_top5 = [
-                (int(r["GridPosition"]), str(r["Abbreviation"]))
-                for _, r in grid_results.iterrows()
-            ]
-        except Exception:
-            grid_baseline_top5 = []
-        grid_score = compute_scoring(grid_baseline_top5, actual) if grid_baseline_top5 else 0
-
-        # Categorise predictions: exact hits, in-top-5 misses, complete misses
-        actual_top5_set = {d for d, p in actual.items() if p <= 5}
-        exact_hits = [d for pos, d in predicted if actual.get(d) == pos]
-        in_top5_hits = [
-            d for pos, d in predicted
-            if d in actual_top5_set and actual.get(d) != pos
-        ]
-        misses = [d for _, d in predicted if d not in actual_top5_set]
-
-        # Sort actual top 5 by position for display
-        actual_sorted = sorted(
-            ((d, p) for d, p in actual.items() if p <= 5),
-            key=lambda x: x[1],
-        )
-        actual_top5 = [(int(p), str(d)) for d, p in actual_sorted]
-
-        return LastRaceRecap(
-            race_name=race["name"],
-            race_date=race["date"],
-            predicted_top5=predicted,
-            actual_top5=actual_top5,
-            score=int(score),
-            grid_baseline_score=int(grid_score),
-            grid_baseline_top5=grid_baseline_top5,
-            exact_hits=exact_hits,
-            in_top5_hits=in_top5_hits,
-            misses=misses,
-        )
+        recap = _score_history_entry(entry, actual)
+        history[idx]["status"] = "scored"
+        history[idx]["scorecard"] = {
+            "scored_at": datetime.utcnow().isoformat() + "Z",
+            "actual_top5": [[int(p), str(d)] for p, d in recap.actual_top5],
+            "score": int(recap.score),
+            "grid_baseline_score": int(recap.grid_baseline_score),
+            "grid_baseline_top5": [
+                [int(p), str(d)] for p, d in recap.grid_baseline_top5
+            ],
+            "exact_hits": recap.exact_hits,
+            "in_top5_hits": recap.in_top5_hits,
+            "misses": recap.misses,
+        }
+        _write_prediction_history(history)
+        logger.info("Saved scorecard for %s to prediction history", race["name"])
+        return recap
 
     return None
+
+
+def _score_history_entry(entry: dict, actual: dict[str, int]) -> LastRaceRecap:
+    """Score one saved prediction against actual finishing positions."""
+    race = entry["race"]
+    predicted = [(int(p), str(d)) for p, d in entry["predicted_top5"]]
+    score = compute_scoring(predicted, actual)
+
+    # Compute grid baseline for the same race.
+    grid_baseline_top5: list[tuple[int, str]] = []
+    try:
+        import fastf1
+        grid_session = fastf1.get_session(race["year"], race["round"], "R")
+        grid_session.load(laps=False, telemetry=False, weather=False, messages=False)
+        grid_results = grid_session.results.dropna(subset=["GridPosition"])
+        grid_results = grid_results.sort_values("GridPosition").head(5)
+        grid_baseline_top5 = [
+            (int(r["GridPosition"]), str(r["Abbreviation"]))
+            for _, r in grid_results.iterrows()
+        ]
+    except Exception:
+        grid_baseline_top5 = []
+    grid_score = compute_scoring(grid_baseline_top5, actual) if grid_baseline_top5 else 0
+
+    actual_top5_set = {d for d, p in actual.items() if p <= 5}
+    exact_hits = [d for pos, d in predicted if actual.get(d) == pos]
+    in_top5_hits = [
+        d for pos, d in predicted
+        if d in actual_top5_set and actual.get(d) != pos
+    ]
+    misses = [d for _, d in predicted if d not in actual_top5_set]
+
+    actual_sorted = sorted(
+        ((d, p) for d, p in actual.items() if p <= 5),
+        key=lambda x: x[1],
+    )
+    actual_top5 = [(int(p), str(d)) for d, p in actual_sorted]
+
+    return LastRaceRecap(
+        race_name=race["name"],
+        race_date=race["date"],
+        predicted_top5=predicted,
+        actual_top5=actual_top5,
+        score=int(score),
+        grid_baseline_score=int(grid_score),
+        grid_baseline_top5=grid_baseline_top5,
+        exact_hits=exact_hits,
+        in_top5_hits=in_top5_hits,
+        misses=misses,
+    )
+
+
+def _recap_from_history_entry(entry: dict) -> LastRaceRecap:
+    """Build a recap from a scorecard already saved in prediction history."""
+    race = entry["race"]
+    scorecard = entry["scorecard"]
+    return LastRaceRecap(
+        race_name=race["name"],
+        race_date=race["date"],
+        predicted_top5=[
+            (int(p), str(d)) for p, d in entry["predicted_top5"]
+        ],
+        actual_top5=[
+            (int(p), str(d)) for p, d in scorecard.get("actual_top5", [])
+        ],
+        score=int(scorecard.get("score", 0)),
+        grid_baseline_score=int(scorecard.get("grid_baseline_score", 0)),
+        grid_baseline_top5=[
+            (int(p), str(d)) for p, d in scorecard.get("grid_baseline_top5", [])
+        ],
+        exact_hits=[str(d) for d in scorecard.get("exact_hits", [])],
+        in_top5_hits=[str(d) for d in scorecard.get("in_top5_hits", [])],
+        misses=[str(d) for d in scorecard.get("misses", [])],
+    )
 
 
 def _load_validation_history() -> list[dict]:

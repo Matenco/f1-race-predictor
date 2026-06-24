@@ -10,6 +10,11 @@ driver's last 3 finishes.
 
 from __future__ import annotations
 
+import json
+import sys
+import types
+from unittest.mock import patch
+
 import numpy as np
 import pandas as pd
 
@@ -17,6 +22,7 @@ from src import config
 from src.feature_engineering import build_features
 from src.next_race import NextRace
 from src.predict import (
+    _build_last_race_recap,
     _compute_driver_features,
     build_prediction_features,
     monte_carlo_simulation,
@@ -200,6 +206,97 @@ def test_monte_carlo_high_p1_driver_wins_most(synthetic_history: pd.DataFrame):
     assert mc["win_prob"][5] > 0.50, (
         f"Dominant driver only won {mc['win_prob'][5]:.1%} of simulations"
     )
+
+
+def test_last_race_recap_persists_scorecard(tmp_path, monkeypatch):
+    """When actual results become available, the recap is saved to history."""
+    history_path = tmp_path / "prediction_history.json"
+    monkeypatch.setattr(config, "PREDICTION_HISTORY_FILE", history_path)
+    monkeypatch.setitem(
+        sys.modules,
+        "fastf1",
+        types.SimpleNamespace(get_session=lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError())),
+    )
+    history_path.write_text(json.dumps([{
+        "predicted_at": "2026-06-01T00:00:00Z",
+        "race": {
+            "name": "Spanish Grand Prix",
+            "year": 2026,
+            "round": 7,
+            "circuit": "Barcelona",
+            "date": "2026-06-14",
+        },
+        "mode": "blind",
+        "status": "pending",
+        "predicted_top5": [[1, "AAA"], [2, "BBA"], [3, "GGA"], [4, "DDA"], [5, "EEA"]],
+    }]))
+    current_race = NextRace(
+        year=2026,
+        round_number=8,
+        name="Austrian Grand Prix",
+        circuit="Spielberg",
+        country="Austria",
+        date=pd.Timestamp("2026-06-28"),
+        has_quali_results=False,
+    )
+    actual = {"AAA": 1, "GGA": 2, "BBA": 3, "FFF": 4, "ZZZ": 5, "DDA": 6, "EEA": 7}
+
+    with patch("src.predict._fetch_actual_race_results", return_value=actual):
+        recap = _build_last_race_recap(current_race)
+
+    saved = json.loads(history_path.read_text())
+    assert recap is not None
+    assert recap.race_name == "Spanish Grand Prix"
+    assert recap.score == 4
+    assert saved[0]["status"] == "scored"
+    assert saved[0]["scorecard"]["score"] == 4
+    assert saved[0]["scorecard"]["actual_top5"][0] == [1, "AAA"]
+
+
+def test_last_race_recap_uses_saved_scorecard_without_refetch(tmp_path, monkeypatch):
+    """A saved scorecard is enough for HTML; no live result fetch is needed."""
+    history_path = tmp_path / "prediction_history.json"
+    monkeypatch.setattr(config, "PREDICTION_HISTORY_FILE", history_path)
+    history_path.write_text(json.dumps([{
+        "predicted_at": "2026-06-01T00:00:00Z",
+        "race": {
+            "name": "Spanish Grand Prix",
+            "year": 2026,
+            "round": 7,
+            "circuit": "Barcelona",
+            "date": "2026-06-14",
+        },
+        "mode": "blind",
+        "status": "scored",
+        "predicted_top5": [[1, "AAA"], [2, "BBA"], [3, "GGA"], [4, "DDA"], [5, "EEA"]],
+        "scorecard": {
+            "scored_at": "2026-06-15T00:00:00Z",
+            "actual_top5": [[1, "AAA"], [2, "GGA"], [3, "BBA"], [4, "FFF"], [5, "ZZZ"]],
+            "score": 4,
+            "grid_baseline_score": 2,
+            "grid_baseline_top5": [],
+            "exact_hits": ["AAA"],
+            "in_top5_hits": ["BBA", "GGA"],
+            "misses": ["DDA", "EEA"],
+        },
+    }]))
+    current_race = NextRace(
+        year=2026,
+        round_number=8,
+        name="Austrian Grand Prix",
+        circuit="Spielberg",
+        country="Austria",
+        date=pd.Timestamp("2026-06-28"),
+        has_quali_results=False,
+    )
+
+    with patch("src.predict._fetch_actual_race_results", side_effect=AssertionError):
+        recap = _build_last_race_recap(current_race)
+
+    assert recap is not None
+    assert recap.race_name == "Spanish Grand Prix"
+    assert recap.score == 4
+    assert recap.exact_hits == ["AAA"]
 
 
 # =============================================================================

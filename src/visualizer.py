@@ -521,6 +521,7 @@ _HTML_TEMPLATE = """<!DOCTYPE html>
       <div class="card-subtitle">{race_name} &middot; {race_date}</div>
       <div class="card-subtitle">Grid Top 5 ordered by XGBoost ranker</div>
       <div class="top5-list">{top5_html}</div>
+      <div class="card-subtitle">Prediction made: {predicted_at}</div>
       {sixth_html}
     </div>
     <div class="card">
@@ -836,6 +837,7 @@ def render_html(pred: RacePrediction, output_path: Path | None = None) -> Path:
         validation_prose=_render_validation_prose(pred),
         stats_html=_render_validation_stats(pred),
         validation_chart=val_chart_html,
+        predicted_at=pred.predicted_at.strftime("%Y-%m-%d %H:%M UTC"),
         generated_at=datetime.now().strftime("%Y-%m-%d %H:%M"),
         bg=COLOURS["background"],
         card=COLOURS["card"],
