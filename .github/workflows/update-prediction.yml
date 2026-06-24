@@ -62,6 +62,55 @@ jobs:
           PYTHONUNBUFFERED: "1"
           MPLCONFIGDIR: ${{ github.workspace }}/.matplotlib
 
+      - name: Persist prediction history
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          path = Path("model/prediction_history.json")
+
+          def load_head():
+              try:
+                  raw = subprocess.check_output(
+                      ["git", "show", "HEAD:model/prediction_history.json"],
+                      text=True,
+                  )
+              except subprocess.CalledProcessError:
+                  return []
+              return json.loads(raw)
+
+          def load_worktree():
+              return json.loads(path.read_text()) if path.exists() else []
+
+          def meaningful(history):
+              cleaned = []
+              for entry in history:
+                  entry = dict(entry)
+                  entry.pop("predicted_at", None)
+                  if entry.get("scorecard"):
+                      scorecard = dict(entry["scorecard"])
+                      scorecard.pop("scored_at", None)
+                      entry["scorecard"] = scorecard
+                  cleaned.append(entry)
+              return cleaned
+
+          if meaningful(load_head()) == meaningful(load_worktree()):
+              print("No meaningful prediction history change")
+              raise SystemExit(0)
+
+          subprocess.check_call(["git", "add", str(path)])
+          subprocess.check_call([
+              "git", "commit", "-m",
+              "Update prediction history [skip ci]",
+          ])
+          subprocess.check_call(["git", "pull", "--rebase", "--autostash", "origin", "main"])
+          subprocess.check_call(["git", "push"])
+          PY
+
       # --- Stage HTML for Pages ---
       - name: Prepare publish directory
         run: |
