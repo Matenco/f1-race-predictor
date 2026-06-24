@@ -63,6 +63,100 @@
         5,
         "PIA"
       ]
+    ],
+    "status": "scored",
+    "scorecard": {
+      "scored_at": "2026-06-24T20:40:45.270718Z",
+      "actual_top5": [
+        [
+          1,
+          "ANT"
+        ],
+        [
+          2,
+          "HAM"
+        ],
+        [
+          3,
+          "GAS"
+        ],
+        [
+          4,
+          "HAD"
+        ],
+        [
+          5,
+          "PIA"
+        ]
+      ],
+      "score": 6,
+      "grid_baseline_score": 4,
+      "grid_baseline_top5": [
+        [
+          1,
+          "ANT"
+        ],
+        [
+          2,
+          "VER"
+        ],
+        [
+          3,
+          "HAM"
+        ],
+        [
+          4,
+          "LEC"
+        ],
+        [
+          5,
+          "HAD"
+        ]
+      ],
+      "exact_hits": [
+        "ANT",
+        "HAM",
+        "PIA"
+      ],
+      "in_top5_hits": [],
+      "misses": [
+        "LEC",
+        "VER"
+      ]
+    }
+  },
+  {
+    "predicted_at": "2026-06-24T20:40:45.271310Z",
+    "race": {
+      "name": "Austrian Grand Prix",
+      "year": 2026,
+      "round": 8,
+      "circuit": "Spielberg",
+      "date": "2026-06-28"
+    },
+    "mode": "blind",
+    "status": "pending",
+    "predicted_top5": [
+      [
+        1,
+        "ANT"
+      ],
+      [
+        2,
+        "HAM"
+      ],
+      [
+        3,
+        "LEC"
+      ],
+      [
+        4,
+        "VER"
+      ],
+      [
+        5,
+        "PIA"
+      ]
     ]
   }
 ]
