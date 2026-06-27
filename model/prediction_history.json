@@ -126,7 +126,7 @@
     }
   },
   {
-    "predicted_at": "2026-06-24T20:40:45.271310Z",
+    "predicted_at": "2026-06-27T19:21:13.484778Z",
     "race": {
       "name": "Austrian Grand Prix",
       "year": 2026,
@@ -134,28 +134,28 @@
       "circuit": "Spielberg",
       "date": "2026-06-28"
     },
-    "mode": "blind",
+    "mode": "informed",
     "status": "pending",
     "predicted_top5": [
       [
         1,
-        "ANT"
+        "RUS"
       ],
       [
         2,
-        "HAM"
-      ],
-      [
-        3,
         "LEC"
       ],
       [
+        3,
+        "HAM"
+      ],
+      [
         4,
-        "VER"
+        "ANT"
       ],
       [
         5,
-        "PIA"
+        "VER"
       ]
     ]
   }
