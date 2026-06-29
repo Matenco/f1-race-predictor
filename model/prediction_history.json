@@ -135,7 +135,7 @@
       "date": "2026-06-28"
     },
     "mode": "informed",
-    "status": "pending",
+    "status": "scored",
     "predicted_top5": [
       [
         1,
@@ -156,6 +156,100 @@
       [
         5,
         "VER"
+      ]
+    ],
+    "scorecard": {
+      "scored_at": "2026-06-29T03:55:10.641173Z",
+      "actual_top5": [
+        [
+          1,
+          "RUS"
+        ],
+        [
+          2,
+          "VER"
+        ],
+        [
+          3,
+          "ANT"
+        ],
+        [
+          4,
+          "PIA"
+        ],
+        [
+          5,
+          "HAM"
+        ]
+      ],
+      "score": 5,
+      "grid_baseline_score": 5,
+      "grid_baseline_top5": [
+        [
+          1,
+          "RUS"
+        ],
+        [
+          2,
+          "LEC"
+        ],
+        [
+          3,
+          "HAM"
+        ],
+        [
+          4,
+          "ANT"
+        ],
+        [
+          5,
+          "VER"
+        ]
+      ],
+      "exact_hits": [
+        "RUS"
+      ],
+      "in_top5_hits": [
+        "HAM",
+        "ANT",
+        "VER"
+      ],
+      "misses": [
+        "LEC"
+      ]
+    }
+  },
+  {
+    "predicted_at": "2026-06-29T03:55:10.641955Z",
+    "race": {
+      "name": "British Grand Prix",
+      "year": 2026,
+      "round": 9,
+      "circuit": "Silverstone",
+      "date": "2026-07-05"
+    },
+    "mode": "blind",
+    "status": "pending",
+    "predicted_top5": [
+      [
+        1,
+        "ANT"
+      ],
+      [
+        2,
+        "HAM"
+      ],
+      [
+        3,
+        "LEC"
+      ],
+      [
+        4,
+        "VER"
+      ],
+      [
+        5,
+        "PIA"
       ]
     ]
   }
