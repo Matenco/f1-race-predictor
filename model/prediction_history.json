@@ -220,7 +220,7 @@
     }
   },
   {
-    "predicted_at": "2026-06-29T03:55:10.641955Z",
+    "predicted_at": "2026-07-04T19:13:02.984885Z",
     "race": {
       "name": "British Grand Prix",
       "year": 2026,
@@ -228,7 +228,7 @@
       "circuit": "Silverstone",
       "date": "2026-07-05"
     },
-    "mode": "blind",
+    "mode": "informed",
     "status": "pending",
     "predicted_top5": [
       [
@@ -237,19 +237,19 @@
       ],
       [
         2,
-        "HAM"
-      ],
-      [
-        3,
         "LEC"
       ],
       [
+        3,
+        "HAM"
+      ],
+      [
         4,
-        "VER"
+        "RUS"
       ],
       [
         5,
-        "PIA"
+        "NOR"
       ]
     ]
   }
