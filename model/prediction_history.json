@@ -229,7 +229,7 @@
       "date": "2026-07-05"
     },
     "mode": "informed",
-    "status": "pending",
+    "status": "scored",
     "predicted_top5": [
       [
         1,
@@ -250,6 +250,100 @@
       [
         5,
         "NOR"
+      ]
+    ],
+    "scorecard": {
+      "scored_at": "2026-07-06T03:31:38.414287Z",
+      "actual_top5": [
+        [
+          1,
+          "LEC"
+        ],
+        [
+          2,
+          "RUS"
+        ],
+        [
+          3,
+          "HAM"
+        ],
+        [
+          4,
+          "NOR"
+        ],
+        [
+          5,
+          "HAD"
+        ]
+      ],
+      "score": 5,
+      "grid_baseline_score": 6,
+      "grid_baseline_top5": [
+        [
+          1,
+          "ANT"
+        ],
+        [
+          2,
+          "LEC"
+        ],
+        [
+          3,
+          "HAM"
+        ],
+        [
+          4,
+          "RUS"
+        ],
+        [
+          5,
+          "HAD"
+        ]
+      ],
+      "exact_hits": [
+        "HAM"
+      ],
+      "in_top5_hits": [
+        "LEC",
+        "RUS",
+        "NOR"
+      ],
+      "misses": [
+        "ANT"
+      ]
+    }
+  },
+  {
+    "predicted_at": "2026-07-06T03:31:38.414982Z",
+    "race": {
+      "name": "Belgian Grand Prix",
+      "year": 2026,
+      "round": 10,
+      "circuit": "Spa-Francorchamps",
+      "date": "2026-07-19"
+    },
+    "mode": "blind",
+    "status": "pending",
+    "predicted_top5": [
+      [
+        1,
+        "ANT"
+      ],
+      [
+        2,
+        "HAM"
+      ],
+      [
+        3,
+        "LEC"
+      ],
+      [
+        4,
+        "VER"
+      ],
+      [
+        5,
+        "PIA"
       ]
     ]
   }
