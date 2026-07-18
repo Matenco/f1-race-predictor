@@ -314,7 +314,7 @@
     }
   },
   {
-    "predicted_at": "2026-07-06T03:31:38.414982Z",
+    "predicted_at": "2026-07-18T19:03:00.028034Z",
     "race": {
       "name": "Belgian Grand Prix",
       "year": 2026,
@@ -322,7 +322,7 @@
       "circuit": "Spa-Francorchamps",
       "date": "2026-07-19"
     },
-    "mode": "blind",
+    "mode": "informed",
     "status": "pending",
     "predicted_top5": [
       [
@@ -331,19 +331,19 @@
       ],
       [
         2,
-        "HAM"
-      ],
-      [
-        3,
-        "LEC"
-      ],
-      [
-        4,
         "VER"
       ],
       [
+        3,
+        "NOR"
+      ],
+      [
+        4,
+        "LEC"
+      ],
+      [
         5,
-        "PIA"
+        "RUS"
       ]
     ]
   }
