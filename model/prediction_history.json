@@ -323,7 +323,7 @@
       "date": "2026-07-19"
     },
     "mode": "informed",
-    "status": "pending",
+    "status": "scored",
     "predicted_top5": [
       [
         1,
@@ -344,6 +344,100 @@
       [
         5,
         "RUS"
+      ]
+    ],
+    "scorecard": {
+      "scored_at": "2026-07-20T02:55:12.072091Z",
+      "actual_top5": [
+        [
+          1,
+          "ANT"
+        ],
+        [
+          2,
+          "LEC"
+        ],
+        [
+          3,
+          "VER"
+        ],
+        [
+          4,
+          "HAM"
+        ],
+        [
+          5,
+          "PIA"
+        ]
+      ],
+      "score": 4,
+      "grid_baseline_score": 5,
+      "grid_baseline_top5": [
+        [
+          1,
+          "ANT"
+        ],
+        [
+          2,
+          "VER"
+        ],
+        [
+          3,
+          "RUS"
+        ],
+        [
+          4,
+          "LEC"
+        ],
+        [
+          5,
+          "HAM"
+        ]
+      ],
+      "exact_hits": [
+        "ANT"
+      ],
+      "in_top5_hits": [
+        "VER",
+        "LEC"
+      ],
+      "misses": [
+        "NOR",
+        "RUS"
+      ]
+    }
+  },
+  {
+    "predicted_at": "2026-07-20T02:55:12.072920Z",
+    "race": {
+      "name": "Hungarian Grand Prix",
+      "year": 2026,
+      "round": 11,
+      "circuit": "Budapest",
+      "date": "2026-07-26"
+    },
+    "mode": "blind",
+    "status": "pending",
+    "predicted_top5": [
+      [
+        1,
+        "ANT"
+      ],
+      [
+        2,
+        "HAM"
+      ],
+      [
+        3,
+        "LEC"
+      ],
+      [
+        4,
+        "VER"
+      ],
+      [
+        5,
+        "PIA"
       ]
     ]
   }
