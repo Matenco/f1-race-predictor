@@ -408,7 +408,7 @@
     }
   },
   {
-    "predicted_at": "2026-07-20T02:55:12.072920Z",
+    "predicted_at": "2026-07-25T19:06:24.800201Z",
     "race": {
       "name": "Hungarian Grand Prix",
       "year": 2026,
@@ -416,12 +416,12 @@
       "circuit": "Budapest",
       "date": "2026-07-26"
     },
-    "mode": "blind",
+    "mode": "informed",
     "status": "pending",
     "predicted_top5": [
       [
         1,
-        "ANT"
+        "NOR"
       ],
       [
         2,
@@ -433,7 +433,7 @@
       ],
       [
         4,
-        "VER"
+        "ANT"
       ],
       [
         5,
