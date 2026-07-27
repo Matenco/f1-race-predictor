@@ -417,7 +417,7 @@
       "date": "2026-07-26"
     },
     "mode": "informed",
-    "status": "pending",
+    "status": "scored",
     "predicted_top5": [
       [
         1,
@@ -434,6 +434,100 @@
       [
         4,
         "ANT"
+      ],
+      [
+        5,
+        "PIA"
+      ]
+    ],
+    "scorecard": {
+      "scored_at": "2026-07-27T02:53:31.163434Z",
+      "actual_top5": [
+        [
+          1,
+          "NOR"
+        ],
+        [
+          2,
+          "VER"
+        ],
+        [
+          3,
+          "ANT"
+        ],
+        [
+          4,
+          "LEC"
+        ],
+        [
+          5,
+          "HAM"
+        ]
+      ],
+      "score": 5,
+      "grid_baseline_score": 6,
+      "grid_baseline_top5": [
+        [
+          1,
+          "NOR"
+        ],
+        [
+          2,
+          "LEC"
+        ],
+        [
+          3,
+          "PIA"
+        ],
+        [
+          4,
+          "VER"
+        ],
+        [
+          5,
+          "HAM"
+        ]
+      ],
+      "exact_hits": [
+        "NOR"
+      ],
+      "in_top5_hits": [
+        "HAM",
+        "LEC",
+        "ANT"
+      ],
+      "misses": [
+        "PIA"
+      ]
+    }
+  },
+  {
+    "predicted_at": "2026-07-27T02:53:31.164048Z",
+    "race": {
+      "name": "Dutch Grand Prix",
+      "year": 2026,
+      "round": 12,
+      "circuit": "Zandvoort",
+      "date": "2026-08-23"
+    },
+    "mode": "blind",
+    "status": "pending",
+    "predicted_top5": [
+      [
+        1,
+        "ANT"
+      ],
+      [
+        2,
+        "HAM"
+      ],
+      [
+        3,
+        "LEC"
+      ],
+      [
+        4,
+        "VER"
       ],
       [
         5,
