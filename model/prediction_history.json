@@ -502,7 +502,7 @@
     }
   },
   {
-    "predicted_at": "2026-07-27T02:53:31.164048Z",
+    "predicted_at": "2026-08-22T18:29:44.505338Z",
     "race": {
       "name": "Dutch Grand Prix",
       "year": 2026,
@@ -510,28 +510,28 @@
       "circuit": "Zandvoort",
       "date": "2026-08-23"
     },
-    "mode": "blind",
+    "mode": "informed",
     "status": "pending",
     "predicted_top5": [
       [
         1,
-        "ANT"
+        "NOR"
       ],
       [
         2,
-        "HAM"
+        "RUS"
       ],
       [
         3,
-        "LEC"
+        "ANT"
       ],
       [
         4,
-        "VER"
+        "PIA"
       ],
       [
         5,
-        "PIA"
+        "LEC"
       ]
     ]
   }
