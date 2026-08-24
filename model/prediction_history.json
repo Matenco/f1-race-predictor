@@ -511,7 +511,7 @@
       "date": "2026-08-23"
     },
     "mode": "informed",
-    "status": "pending",
+    "status": "scored",
     "predicted_top5": [
       [
         1,
@@ -532,6 +532,100 @@
       [
         5,
         "LEC"
+      ]
+    ],
+    "scorecard": {
+      "scored_at": "2026-08-24T01:14:34.247649Z",
+      "actual_top5": [
+        [
+          1,
+          "NOR"
+        ],
+        [
+          2,
+          "ANT"
+        ],
+        [
+          3,
+          "RUS"
+        ],
+        [
+          4,
+          "HAM"
+        ],
+        [
+          5,
+          "LEC"
+        ]
+      ],
+      "score": 6,
+      "grid_baseline_score": 5,
+      "grid_baseline_top5": [
+        [
+          1,
+          "NOR"
+        ],
+        [
+          2,
+          "RUS"
+        ],
+        [
+          3,
+          "ANT"
+        ],
+        [
+          4,
+          "PIA"
+        ],
+        [
+          5,
+          "HAM"
+        ]
+      ],
+      "exact_hits": [
+        "NOR",
+        "LEC"
+      ],
+      "in_top5_hits": [
+        "RUS",
+        "ANT"
+      ],
+      "misses": [
+        "PIA"
+      ]
+    }
+  },
+  {
+    "predicted_at": "2026-08-24T01:14:34.248630Z",
+    "race": {
+      "name": "Italian Grand Prix",
+      "year": 2026,
+      "round": 13,
+      "circuit": "Monza",
+      "date": "2026-09-06"
+    },
+    "mode": "blind",
+    "status": "pending",
+    "predicted_top5": [
+      [
+        1,
+        "ANT"
+      ],
+      [
+        2,
+        "HAM"
+      ],
+      [
+        3,
+        "LEC"
+      ],
+      [
+        4,
+        "VER"
+      ],
+      [
+        5,
+        "NOR"
       ]
     ]
   }
