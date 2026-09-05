@@ -596,7 +596,7 @@
     }
   },
   {
-    "predicted_at": "2026-08-24T01:14:34.248630Z",
+    "predicted_at": "2026-09-05T19:59:28.075327Z",
     "race": {
       "name": "Italian Grand Prix",
       "year": 2026,
@@ -604,16 +604,16 @@
       "circuit": "Monza",
       "date": "2026-09-06"
     },
-    "mode": "blind",
+    "mode": "informed",
     "status": "pending",
     "predicted_top5": [
       [
         1,
-        "ANT"
+        "GAS"
       ],
       [
         2,
-        "HAM"
+        "RUS"
       ],
       [
         3,
@@ -621,11 +621,11 @@
       ],
       [
         4,
-        "VER"
+        "PIA"
       ],
       [
         5,
-        "NOR"
+        "HAM"
       ]
     ]
   }
