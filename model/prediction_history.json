@@ -605,7 +605,7 @@
       "date": "2026-09-06"
     },
     "mode": "informed",
-    "status": "pending",
+    "status": "scored",
     "predicted_top5": [
       [
         1,
@@ -626,6 +626,100 @@
       [
         5,
         "HAM"
+      ]
+    ],
+    "scorecard": {
+      "scored_at": "2026-09-07T03:08:22.927086Z",
+      "actual_top5": [
+        [
+          1,
+          "ANT"
+        ],
+        [
+          2,
+          "RUS"
+        ],
+        [
+          3,
+          "VER"
+        ],
+        [
+          4,
+          "NOR"
+        ],
+        [
+          5,
+          "PIA"
+        ]
+      ],
+      "score": 3,
+      "grid_baseline_score": 3,
+      "grid_baseline_top5": [
+        [
+          1,
+          "GAS"
+        ],
+        [
+          2,
+          "RUS"
+        ],
+        [
+          3,
+          "LEC"
+        ],
+        [
+          4,
+          "HAM"
+        ],
+        [
+          5,
+          "VER"
+        ]
+      ],
+      "exact_hits": [
+        "RUS"
+      ],
+      "in_top5_hits": [
+        "PIA"
+      ],
+      "misses": [
+        "GAS",
+        "LEC",
+        "HAM"
+      ]
+    }
+  },
+  {
+    "predicted_at": "2026-09-07T03:08:22.928178Z",
+    "race": {
+      "name": "Spanish Grand Prix",
+      "year": 2026,
+      "round": 14,
+      "circuit": "Madrid",
+      "date": "2026-09-13"
+    },
+    "mode": "blind",
+    "status": "pending",
+    "predicted_top5": [
+      [
+        1,
+        "ANT"
+      ],
+      [
+        2,
+        "HAM"
+      ],
+      [
+        3,
+        "LEC"
+      ],
+      [
+        4,
+        "VER"
+      ],
+      [
+        5,
+        "PIA"
       ]
     ]
   }
