@@ -690,7 +690,7 @@
     }
   },
   {
-    "predicted_at": "2026-09-07T03:08:22.928178Z",
+    "predicted_at": "2026-09-12T20:14:17.951906Z",
     "race": {
       "name": "Spanish Grand Prix",
       "year": 2026,
@@ -698,28 +698,28 @@
       "circuit": "Madrid",
       "date": "2026-09-13"
     },
-    "mode": "blind",
+    "mode": "informed",
     "status": "pending",
     "predicted_top5": [
       [
         1,
-        "ANT"
+        "NOR"
       ],
       [
         2,
-        "HAM"
+        "ANT"
       ],
       [
         3,
-        "LEC"
-      ],
-      [
-        4,
         "VER"
       ],
       [
+        4,
+        "HAM"
+      ],
+      [
         5,
-        "PIA"
+        "LEC"
       ]
     ]
   }
