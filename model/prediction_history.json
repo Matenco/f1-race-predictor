@@ -699,7 +699,7 @@
       "date": "2026-09-13"
     },
     "mode": "informed",
-    "status": "pending",
+    "status": "scored",
     "predicted_top5": [
       [
         1,
@@ -720,6 +720,99 @@
       [
         5,
         "LEC"
+      ]
+    ],
+    "scorecard": {
+      "scored_at": "2026-09-14T03:36:37.066047Z",
+      "actual_top5": [
+        [
+          1,
+          "ANT"
+        ],
+        [
+          2,
+          "VER"
+        ],
+        [
+          3,
+          "NOR"
+        ],
+        [
+          4,
+          "LEC"
+        ],
+        [
+          5,
+          "RUS"
+        ]
+      ],
+      "score": 4,
+      "grid_baseline_score": 4,
+      "grid_baseline_top5": [
+        [
+          1,
+          "NOR"
+        ],
+        [
+          2,
+          "ANT"
+        ],
+        [
+          3,
+          "VER"
+        ],
+        [
+          4,
+          "HAM"
+        ],
+        [
+          5,
+          "LEC"
+        ]
+      ],
+      "exact_hits": [],
+      "in_top5_hits": [
+        "NOR",
+        "ANT",
+        "VER",
+        "LEC"
+      ],
+      "misses": [
+        "HAM"
+      ]
+    }
+  },
+  {
+    "predicted_at": "2026-09-14T03:36:37.067311Z",
+    "race": {
+      "name": "Azerbaijan Grand Prix",
+      "year": 2026,
+      "round": 15,
+      "circuit": "Baku",
+      "date": "2026-09-26"
+    },
+    "mode": "blind",
+    "status": "pending",
+    "predicted_top5": [
+      [
+        1,
+        "ANT"
+      ],
+      [
+        2,
+        "LEC"
+      ],
+      [
+        3,
+        "HAM"
+      ],
+      [
+        4,
+        "VER"
+      ],
+      [
+        5,
+        "PIA"
       ]
     ]
   }
