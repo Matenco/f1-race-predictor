@@ -792,7 +792,7 @@
       "date": "2026-09-26"
     },
     "mode": "informed",
-    "status": "pending",
+    "status": "scored",
     "predicted_top5": [
       [
         1,
@@ -813,6 +813,100 @@
       [
         5,
         "NOR"
+      ]
+    ],
+    "scorecard": {
+      "scored_at": "2026-09-27T03:55:44.753827Z",
+      "actual_top5": [
+        [
+          1,
+          "RUS"
+        ],
+        [
+          2,
+          "VER"
+        ],
+        [
+          3,
+          "HAD"
+        ],
+        [
+          4,
+          "LEC"
+        ],
+        [
+          5,
+          "ANT"
+        ]
+      ],
+      "score": 4,
+      "grid_baseline_score": 4,
+      "grid_baseline_top5": [
+        [
+          1,
+          "RUS"
+        ],
+        [
+          2,
+          "LEC"
+        ],
+        [
+          3,
+          "PIA"
+        ],
+        [
+          4,
+          "HAD"
+        ],
+        [
+          5,
+          "NOR"
+        ]
+      ],
+      "exact_hits": [
+        "RUS"
+      ],
+      "in_top5_hits": [
+        "LEC",
+        "HAD"
+      ],
+      "misses": [
+        "PIA",
+        "NOR"
+      ]
+    }
+  },
+  {
+    "predicted_at": "2026-09-27T03:55:44.755029Z",
+    "race": {
+      "name": "Bahrain Grand Prix",
+      "year": 2026,
+      "round": 16,
+      "circuit": "Kuala Lumpur",
+      "date": "2026-10-04"
+    },
+    "mode": "blind",
+    "status": "pending",
+    "predicted_top5": [
+      [
+        1,
+        "ANT"
+      ],
+      [
+        2,
+        "HAM"
+      ],
+      [
+        3,
+        "LEC"
+      ],
+      [
+        4,
+        "VER"
+      ],
+      [
+        5,
+        "PIA"
       ]
     ]
   }
