@@ -877,7 +877,7 @@
     }
   },
   {
-    "predicted_at": "2026-09-27T03:55:44.755029Z",
+    "predicted_at": "2026-10-03T15:48:15.433895Z",
     "race": {
       "name": "Bahrain Grand Prix",
       "year": 2026,
@@ -885,12 +885,12 @@
       "circuit": "Kuala Lumpur",
       "date": "2026-10-04"
     },
-    "mode": "blind",
+    "mode": "informed",
     "status": "pending",
     "predicted_top5": [
       [
         1,
-        "ANT"
+        "VER"
       ],
       [
         2,
@@ -898,15 +898,15 @@
       ],
       [
         3,
-        "LEC"
+        "ANT"
       ],
       [
         4,
-        "VER"
+        "HAD"
       ],
       [
         5,
-        "PIA"
+        "LEC"
       ]
     ]
   }
