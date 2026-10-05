@@ -886,7 +886,7 @@
       "date": "2026-10-04"
     },
     "mode": "informed",
-    "status": "pending",
+    "status": "scored",
     "predicted_top5": [
       [
         1,
@@ -907,6 +907,99 @@
       [
         5,
         "LEC"
+      ]
+    ],
+    "scorecard": {
+      "scored_at": "2026-10-05T04:18:52.636858Z",
+      "actual_top5": [
+        [
+          1,
+          "VER"
+        ],
+        [
+          2,
+          "ANT"
+        ],
+        [
+          3,
+          "HAM"
+        ],
+        [
+          4,
+          "LEC"
+        ],
+        [
+          5,
+          "HAD"
+        ]
+      ],
+      "score": 6,
+      "grid_baseline_score": 6,
+      "grid_baseline_top5": [
+        [
+          1,
+          "VER"
+        ],
+        [
+          2,
+          "HAM"
+        ],
+        [
+          3,
+          "ANT"
+        ],
+        [
+          4,
+          "LEC"
+        ],
+        [
+          5,
+          "NOR"
+        ]
+      ],
+      "exact_hits": [
+        "VER"
+      ],
+      "in_top5_hits": [
+        "HAM",
+        "ANT",
+        "HAD",
+        "LEC"
+      ],
+      "misses": []
+    }
+  },
+  {
+    "predicted_at": "2026-10-05T04:18:52.638151Z",
+    "race": {
+      "name": "Singapore Grand Prix",
+      "year": 2026,
+      "round": 17,
+      "circuit": "Marina Bay",
+      "date": "2026-10-11"
+    },
+    "mode": "blind",
+    "status": "pending",
+    "predicted_top5": [
+      [
+        1,
+        "ANT"
+      ],
+      [
+        2,
+        "HAM"
+      ],
+      [
+        3,
+        "LEC"
+      ],
+      [
+        4,
+        "VER"
+      ],
+      [
+        5,
+        "PIA"
       ]
     ]
   }
