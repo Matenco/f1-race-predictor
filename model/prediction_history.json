@@ -970,7 +970,7 @@
     }
   },
   {
-    "predicted_at": "2026-10-05T04:18:52.638151Z",
+    "predicted_at": "2026-10-11T04:17:24.164790Z",
     "race": {
       "name": "Singapore Grand Prix",
       "year": 2026,
@@ -978,28 +978,28 @@
       "circuit": "Marina Bay",
       "date": "2026-10-11"
     },
-    "mode": "blind",
+    "mode": "informed",
     "status": "pending",
     "predicted_top5": [
       [
         1,
-        "ANT"
-      ],
-      [
-        2,
-        "HAM"
-      ],
-      [
-        3,
-        "LEC"
-      ],
-      [
-        4,
         "VER"
       ],
       [
+        2,
+        "LEC"
+      ],
+      [
+        3,
+        "HAM"
+      ],
+      [
+        4,
+        "ANT"
+      ],
+      [
         5,
-        "PIA"
+        "NOR"
       ]
     ]
   }
