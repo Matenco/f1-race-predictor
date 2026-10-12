@@ -979,7 +979,7 @@
       "date": "2026-10-11"
     },
     "mode": "informed",
-    "status": "pending",
+    "status": "scored",
     "predicted_top5": [
       [
         1,
@@ -1001,10 +1001,70 @@
         5,
         "NOR"
       ]
-    ]
+    ],
+    "scorecard": {
+      "scored_at": "2026-10-12T14:33:28.261934Z",
+      "actual_top5": [
+        [
+          1,
+          "VER"
+        ],
+        [
+          2,
+          "LEC"
+        ],
+        [
+          3,
+          "ANT"
+        ],
+        [
+          4,
+          "NOR"
+        ],
+        [
+          5,
+          "PIA"
+        ]
+      ],
+      "score": 6,
+      "grid_baseline_score": 6,
+      "grid_baseline_top5": [
+        [
+          1,
+          "VER"
+        ],
+        [
+          2,
+          "LEC"
+        ],
+        [
+          3,
+          "HAM"
+        ],
+        [
+          4,
+          "ANT"
+        ],
+        [
+          5,
+          "NOR"
+        ]
+      ],
+      "exact_hits": [
+        "VER",
+        "LEC"
+      ],
+      "in_top5_hits": [
+        "ANT",
+        "NOR"
+      ],
+      "misses": [
+        "HAM"
+      ]
+    }
   },
   {
-    "predicted_at": "2026-10-12T04:34:40.741784Z",
+    "predicted_at": "2026-10-12T14:33:28.263412Z",
     "race": {
       "name": "United States Grand Prix",
       "year": 2026,
