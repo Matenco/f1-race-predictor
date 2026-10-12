@@ -1002,5 +1002,39 @@
         "NOR"
       ]
     ]
+  },
+  {
+    "predicted_at": "2026-10-12T04:34:40.741784Z",
+    "race": {
+      "name": "United States Grand Prix",
+      "year": 2026,
+      "round": 18,
+      "circuit": "Austin",
+      "date": "2026-10-25"
+    },
+    "mode": "blind",
+    "status": "pending",
+    "predicted_top5": [
+      [
+        1,
+        "ANT"
+      ],
+      [
+        2,
+        "HAM"
+      ],
+      [
+        3,
+        "VER"
+      ],
+      [
+        4,
+        "LEC"
+      ],
+      [
+        5,
+        "PIA"
+      ]
+    ]
   }
 ]
