@@ -1064,7 +1064,7 @@
     }
   },
   {
-    "predicted_at": "2026-10-12T14:33:28.263412Z",
+    "predicted_at": "2026-10-25T20:25:59.593479Z",
     "race": {
       "name": "United States Grand Prix",
       "year": 2026,
@@ -1072,7 +1072,7 @@
       "circuit": "Austin",
       "date": "2026-10-25"
     },
-    "mode": "blind",
+    "mode": "informed",
     "status": "pending",
     "predicted_top5": [
       [
@@ -1081,11 +1081,11 @@
       ],
       [
         2,
-        "HAM"
+        "VER"
       ],
       [
         3,
-        "VER"
+        "HAD"
       ],
       [
         4,
@@ -1093,7 +1093,7 @@
       ],
       [
         5,
-        "PIA"
+        "HAM"
       ]
     ]
   }
