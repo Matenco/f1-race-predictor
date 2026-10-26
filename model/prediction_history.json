@@ -1073,7 +1073,7 @@
       "date": "2026-10-25"
     },
     "mode": "informed",
-    "status": "pending",
+    "status": "scored",
     "predicted_top5": [
       [
         1,
@@ -1094,6 +1094,100 @@
       [
         5,
         "HAM"
+      ]
+    ],
+    "scorecard": {
+      "scored_at": "2026-10-26T03:27:04.305535Z",
+      "actual_top5": [
+        [
+          1,
+          "ANT"
+        ],
+        [
+          2,
+          "LEC"
+        ],
+        [
+          3,
+          "VER"
+        ],
+        [
+          4,
+          "HAM"
+        ],
+        [
+          5,
+          "NOR"
+        ]
+      ],
+      "score": 5,
+      "grid_baseline_score": 5,
+      "grid_baseline_top5": [
+        [
+          1,
+          "ANT"
+        ],
+        [
+          2,
+          "VER"
+        ],
+        [
+          3,
+          "HAD"
+        ],
+        [
+          4,
+          "LEC"
+        ],
+        [
+          5,
+          "HAM"
+        ]
+      ],
+      "exact_hits": [
+        "ANT"
+      ],
+      "in_top5_hits": [
+        "VER",
+        "LEC",
+        "HAM"
+      ],
+      "misses": [
+        "HAD"
+      ]
+    }
+  },
+  {
+    "predicted_at": "2026-10-26T03:27:04.307124Z",
+    "race": {
+      "name": "Mexico City Grand Prix",
+      "year": 2026,
+      "round": 19,
+      "circuit": "Mexico City",
+      "date": "2026-11-01"
+    },
+    "mode": "blind",
+    "status": "pending",
+    "predicted_top5": [
+      [
+        1,
+        "ANT"
+      ],
+      [
+        2,
+        "HAM"
+      ],
+      [
+        3,
+        "LEC"
+      ],
+      [
+        4,
+        "VER"
+      ],
+      [
+        5,
+        "NOR"
       ]
     ]
   }
