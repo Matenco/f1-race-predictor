@@ -1158,7 +1158,7 @@
     }
   },
   {
-    "predicted_at": "2026-10-26T03:27:04.307124Z",
+    "predicted_at": "2026-11-01T04:38:35.454391Z",
     "race": {
       "name": "Mexico City Grand Prix",
       "year": 2026,
@@ -1166,16 +1166,16 @@
       "circuit": "Mexico City",
       "date": "2026-11-01"
     },
-    "mode": "blind",
+    "mode": "informed",
     "status": "pending",
     "predicted_top5": [
       [
         1,
-        "ANT"
+        "HAM"
       ],
       [
         2,
-        "HAM"
+        "RUS"
       ],
       [
         3,
