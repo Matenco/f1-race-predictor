@@ -1167,7 +1167,7 @@
       "date": "2026-11-01"
     },
     "mode": "informed",
-    "status": "pending",
+    "status": "scored",
     "predicted_top5": [
       [
         1,
@@ -1188,6 +1188,100 @@
       [
         5,
         "NOR"
+      ]
+    ],
+    "scorecard": {
+      "scored_at": "2026-11-02T04:40:47.071897Z",
+      "actual_top5": [
+        [
+          1,
+          "VER"
+        ],
+        [
+          2,
+          "HAM"
+        ],
+        [
+          3,
+          "ANT"
+        ],
+        [
+          4,
+          "LEC"
+        ],
+        [
+          5,
+          "NOR"
+        ]
+      ],
+      "score": 5,
+      "grid_baseline_score": 4,
+      "grid_baseline_top5": [
+        [
+          1,
+          "HAM"
+        ],
+        [
+          2,
+          "RUS"
+        ],
+        [
+          3,
+          "LEC"
+        ],
+        [
+          4,
+          "ANT"
+        ],
+        [
+          5,
+          "VER"
+        ]
+      ],
+      "exact_hits": [
+        "NOR"
+      ],
+      "in_top5_hits": [
+        "HAM",
+        "LEC",
+        "VER"
+      ],
+      "misses": [
+        "RUS"
+      ]
+    }
+  },
+  {
+    "predicted_at": "2026-11-02T04:40:47.074928Z",
+    "race": {
+      "name": "S\u00e3o Paulo Grand Prix",
+      "year": 2026,
+      "round": 20,
+      "circuit": "S\u00e3o Paulo",
+      "date": "2026-11-08"
+    },
+    "mode": "blind",
+    "status": "pending",
+    "predicted_top5": [
+      [
+        1,
+        "ANT"
+      ],
+      [
+        2,
+        "LEC"
+      ],
+      [
+        3,
+        "VER"
+      ],
+      [
+        4,
+        "HAM"
+      ],
+      [
+        5,
+        "PIA"
       ]
     ]
   }
