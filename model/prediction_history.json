@@ -1252,7 +1252,7 @@
     }
   },
   {
-    "predicted_at": "2026-11-02T04:40:47.074928Z",
+    "predicted_at": "2026-11-08T04:41:31.472901Z",
     "race": {
       "name": "S\u00e3o Paulo Grand Prix",
       "year": 2026,
@@ -1260,28 +1260,28 @@
       "circuit": "S\u00e3o Paulo",
       "date": "2026-11-08"
     },
-    "mode": "blind",
+    "mode": "informed",
     "status": "pending",
     "predicted_top5": [
       [
         1,
-        "ANT"
+        "NOR"
       ],
       [
         2,
-        "LEC"
+        "RUS"
       ],
       [
         3,
-        "VER"
+        "ANT"
       ],
       [
         4,
-        "HAM"
+        "LEC"
       ],
       [
         5,
-        "PIA"
+        "LAW"
       ]
     ]
   }
