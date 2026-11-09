@@ -1261,7 +1261,7 @@
       "date": "2026-11-08"
     },
     "mode": "informed",
-    "status": "pending",
+    "status": "scored",
     "predicted_top5": [
       [
         1,
@@ -1282,6 +1282,100 @@
       [
         5,
         "LAW"
+      ]
+    ],
+    "scorecard": {
+      "scored_at": "2026-11-09T04:51:57.718123Z",
+      "actual_top5": [
+        [
+          1,
+          "NOR"
+        ],
+        [
+          2,
+          "VER"
+        ],
+        [
+          3,
+          "HAD"
+        ],
+        [
+          4,
+          "RUS"
+        ],
+        [
+          5,
+          "ANT"
+        ]
+      ],
+      "score": 4,
+      "grid_baseline_score": 4,
+      "grid_baseline_top5": [
+        [
+          1,
+          "NOR"
+        ],
+        [
+          2,
+          "ANT"
+        ],
+        [
+          3,
+          "LAW"
+        ],
+        [
+          4,
+          "HUL"
+        ],
+        [
+          5,
+          "HAD"
+        ]
+      ],
+      "exact_hits": [
+        "NOR"
+      ],
+      "in_top5_hits": [
+        "RUS",
+        "ANT"
+      ],
+      "misses": [
+        "LEC",
+        "LAW"
+      ]
+    }
+  },
+  {
+    "predicted_at": "2026-11-09T04:51:57.719520Z",
+    "race": {
+      "name": "Las Vegas Grand Prix",
+      "year": 2026,
+      "round": 21,
+      "circuit": "Las Vegas",
+      "date": "2026-11-21"
+    },
+    "mode": "blind",
+    "status": "pending",
+    "predicted_top5": [
+      [
+        1,
+        "ANT"
+      ],
+      [
+        2,
+        "HAM"
+      ],
+      [
+        3,
+        "LEC"
+      ],
+      [
+        4,
+        "VER"
+      ],
+      [
+        5,
+        "PIA"
       ]
     ]
   }
