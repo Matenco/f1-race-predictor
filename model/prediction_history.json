@@ -1346,7 +1346,7 @@
     }
   },
   {
-    "predicted_at": "2026-11-09T04:51:57.719520Z",
+    "predicted_at": "2026-11-21T14:17:12.073308Z",
     "race": {
       "name": "Las Vegas Grand Prix",
       "year": 2026,
@@ -1354,7 +1354,7 @@
       "circuit": "Las Vegas",
       "date": "2026-11-21"
     },
-    "mode": "blind",
+    "mode": "informed",
     "status": "pending",
     "predicted_top5": [
       [
@@ -1363,19 +1363,19 @@
       ],
       [
         2,
-        "HAM"
-      ],
-      [
-        3,
-        "LEC"
-      ],
-      [
-        4,
         "VER"
       ],
       [
+        3,
+        "RUS"
+      ],
+      [
+        4,
+        "NOR"
+      ],
+      [
         5,
-        "PIA"
+        "HAD"
       ]
     ]
   }
