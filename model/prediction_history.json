@@ -1355,7 +1355,7 @@
       "date": "2026-11-21"
     },
     "mode": "informed",
-    "status": "pending",
+    "status": "scored",
     "predicted_top5": [
       [
         1,
@@ -1377,10 +1377,69 @@
         5,
         "HAD"
       ]
-    ]
+    ],
+    "scorecard": {
+      "scored_at": "2026-11-22T14:08:00.626156Z",
+      "actual_top5": [
+        [
+          1,
+          "VER"
+        ],
+        [
+          2,
+          "NOR"
+        ],
+        [
+          3,
+          "PIA"
+        ],
+        [
+          4,
+          "ANT"
+        ],
+        [
+          5,
+          "GAS"
+        ]
+      ],
+      "score": 3,
+      "grid_baseline_score": 3,
+      "grid_baseline_top5": [
+        [
+          1,
+          "VER"
+        ],
+        [
+          2,
+          "RUS"
+        ],
+        [
+          3,
+          "NOR"
+        ],
+        [
+          4,
+          "HAD"
+        ],
+        [
+          5,
+          "LIN"
+        ]
+      ],
+      "exact_hits": [],
+      "in_top5_hits": [
+        "ANT",
+        "VER",
+        "NOR"
+      ],
+      "misses": [
+        "RUS",
+        "HAD"
+      ]
+    }
   },
   {
-    "predicted_at": "2026-11-22T05:20:27.509385Z",
+    "predicted_at": "2026-11-22T14:08:00.627925Z",
     "race": {
       "name": "Qatar Grand Prix",
       "year": 2026,
